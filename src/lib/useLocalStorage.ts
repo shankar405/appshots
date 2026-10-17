@@ -5,7 +5,7 @@
  * Handles serialization, deserialization, and auto-save functionality.
  */
 
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
 import type { Project } from "../types";
 
 /**
@@ -21,6 +21,9 @@ export interface PersistedEditorState {
   /** Timestamp of last save */
   lastSaved: number;
 }
+
+/** Autosave status indicator states */
+export type AutosaveStatus = "saved" | "saving" | "error";
 
 /** Current schema version for migration support */
 const CURRENT_VERSION = 2;
@@ -67,12 +70,15 @@ export const loadPersistedState = (): PersistedEditorState | null => {
  * Saves state to localStorage.
  *
  * @param state - State to persist
+ * @returns boolean indicating success or failure
  */
-export const savePersistedState = (state: PersistedEditorState): void => {
+export const savePersistedState = (state: PersistedEditorState): boolean => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    return true;
   } catch (error) {
     console.error("Failed to save editor state to localStorage:", error);
+    return false;
   }
 };
 
@@ -94,17 +100,24 @@ interface UseEditorPersistenceOptions {
   activeProjectId: string;
 }
 
+export interface UseEditorPersistenceReturn {
+  /** Current autosave status */
+  status: AutosaveStatus;
+}
+
 /**
  * useEditorPersistence - Auto-saves editor state to localStorage
  *
  * Debounces saves to avoid excessive writes during rapid changes.
  *
  * @param options - Current editor state values
+ * @returns Object containing current autosave status
  */
 export const useEditorPersistence = ({
   projects,
   activeProjectId,
-}: UseEditorPersistenceOptions): void => {
+}: UseEditorPersistenceOptions): UseEditorPersistenceReturn => {
+  const [status, setStatus] = useState<AutosaveStatus>("saved");
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isInitialMount = useRef(true);
 
@@ -115,7 +128,9 @@ export const useEditorPersistence = ({
       activeProjectId,
       lastSaved: Date.now(),
     };
-    savePersistedState(state);
+    const success = savePersistedState(state);
+    setStatus(success ? "saved" : "error");
+    return success;
   }, [projects, activeProjectId]);
 
   // Debounced auto-save on state changes
@@ -125,6 +140,8 @@ export const useEditorPersistence = ({
       isInitialMount.current = false;
       return;
     }
+
+    setStatus("saving");
 
     // Clear existing timeout
     if (saveTimeoutRef.current) {
@@ -154,4 +171,6 @@ export const useEditorPersistence = ({
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [saveState]);
+
+  return { status };
 };

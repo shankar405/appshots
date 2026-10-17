@@ -31,6 +31,7 @@ import {
   loadPersistedState,
   useEditorPersistence,
   clearPersistedState,
+  type AutosaveStatus,
 } from "../lib/useLocalStorage";
 
 function generateId() {
@@ -38,6 +39,9 @@ function generateId() {
 }
 
 interface EditorContextType {
+  // Autosave status
+  autosaveStatus: AutosaveStatus;
+
   // Project state
   projects: Project[];
   activeProjectId: string;
@@ -214,7 +218,8 @@ const normalizeProject = (project: Project): Project => {
     screenshots: normalizedScreenshots,
     activeScreenshotId:
       normalizedScreenshots.find((s) => s.id === project.activeScreenshotId)?.id ??
-      normalizedScreenshots[0].id,
+      normalizedScreenshots[0]?.id ??
+      "",
   };
 };
 
@@ -238,31 +243,28 @@ const createDefaultProject = (name: string = "My Project"): Project => {
   };
 };
 
-// Load persisted state once on module load
-const persistedState = loadPersistedState();
-
-// Initialize projects from persisted state or create default
-const getInitialProjects = (): Project[] => {
+// Initialize editor state from persisted storage or create default
+const getInitialState = (): { projects: Project[]; activeProjectId: string } => {
+  const persistedState = loadPersistedState();
   if (persistedState?.projects && persistedState.projects.length > 0) {
-    return persistedState.projects.map(normalizeProject);
+    const projects = persistedState.projects.map(normalizeProject);
+    const activeProjectId =
+      persistedState.activeProjectId &&
+      projects.some((p) => p.id === persistedState.activeProjectId)
+        ? persistedState.activeProjectId
+        : projects[0]?.id || generateId();
+    return { projects, activeProjectId };
   }
-  return [createDefaultProject()];
-};
-
-const getInitialActiveProjectId = (projects: Project[]): string => {
-  if (persistedState?.activeProjectId) {
-    // Verify the project exists
-    const exists = projects.some((p) => p.id === persistedState.activeProjectId);
-    if (exists) return persistedState.activeProjectId;
-  }
-  return projects[0]?.id || generateId();
+  const defaultProject = createDefaultProject();
+  return { projects: [defaultProject], activeProjectId: defaultProject.id };
 };
 
 export const EditorProvider = ({ children }: { children: ReactNode }) => {
   // Project state
-  const [projects, setProjects] = useState<Project[]>(getInitialProjects);
-  const [activeProjectId, setActiveProjectId] = useState(() =>
-    getInitialActiveProjectId(projects),
+  const [initialState] = useState(getInitialState);
+  const [projects, setProjects] = useState<Project[]>(initialState.projects);
+  const [activeProjectId, setActiveProjectId] = useState<string>(
+    initialState.activeProjectId,
   );
 
   // Get active project
@@ -346,13 +348,20 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     subheadlineFontSize,
   ]);
 
+  // Skip initial mount to avoid redundant project state updates
+  const isInitialMount = useRef(true);
+
   // Update project whenever state changes
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
     updateProjectState();
   }, [updateProjectState]);
 
   // Auto-save projects to localStorage
-  useEditorPersistence({
+  const { status: autosaveStatus } = useEditorPersistence({
     projects,
     activeProjectId,
   });
@@ -410,11 +419,23 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     setSubheadlineFontSizeState(size);
   };
 
+  const applyProjectState = (project: Project) => {
+    setActiveProjectId(project.id);
+    setSelectedDeviceIdState(project.selectedDeviceId);
+    setSelectedColorIdState(project.selectedColorId);
+    setExportSizeIdState(project.exportSizeId);
+    setScreenshotsState(project.screenshots);
+    setActiveScreenshotIdState(project.activeScreenshotId);
+    setHeadlineFontSizeState(project.headlineFontSize);
+    setSubheadlineFontSizeState(project.subheadlineFontSize);
+    setSelectedElement(null);
+  };
+
   // Project management functions
   const createProject = (name: string) => {
     const newProject = createDefaultProject(name);
     setProjects((prev) => [...prev, newProject]);
-    switchProject(newProject.id);
+    applyProjectState(newProject);
   };
 
   const renameProject = (id: string, name: string) => {
@@ -435,7 +456,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     if (id === activeProjectId) {
       const remaining = projects.filter((p) => p.id !== id);
       if (remaining.length > 0) {
-        switchProject(remaining[0].id);
+        applyProjectState(remaining[0]);
       }
     }
   };
@@ -443,16 +464,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
   const switchProject = (id: string) => {
     const project = projects.find((p) => p.id === id);
     if (!project) return;
-
-    setActiveProjectId(id);
-    setSelectedDeviceIdState(project.selectedDeviceId);
-    setSelectedColorIdState(project.selectedColorId);
-    setExportSizeIdState(project.exportSizeId);
-    setScreenshotsState(project.screenshots);
-    setActiveScreenshotIdState(project.activeScreenshotId);
-    setHeadlineFontSizeState(project.headlineFontSize);
-    setSubheadlineFontSizeState(project.subheadlineFontSize);
-    setSelectedElement(null);
+    applyProjectState(project);
   };
 
   const selectedDevice =
@@ -985,6 +997,8 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
   return (
     <EditorContext.Provider
       value={{
+        autosaveStatus,
+
         // Project state
         projects,
         activeProjectId,
