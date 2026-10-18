@@ -33,6 +33,7 @@ import {
   clearPersistedState,
   type AutosaveStatus,
 } from "../lib/useLocalStorage";
+import { optimizeImageFile } from "../lib/image-optimizer";
 
 function generateId() {
   return Math.random().toString(36).substring(2, 9);
@@ -101,7 +102,7 @@ interface EditorContextType {
   ) => void;
   handleElementMouseMove: (e: MouseEvent) => void;
   handleElementMouseUp: () => void;
-  addOverlayImage: (file: File) => void;
+  addOverlayImage: (file: File) => Promise<void> | void;
   addIcon: (src: string, name: string) => void;
   removeOverlayImage: (imageId: string) => void;
   updateOverlayImageSize: (imageId: string, widthPercent: number) => void;
@@ -120,7 +121,13 @@ interface EditorContextType {
   sendImageBackward: (imageId: string) => void;
   bringImageToFront: (imageId: string) => void;
   sendImageToBack: (imageId: string) => void;
-  handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleFileUpload: (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => Promise<void> | void;
+  screenshotUploadError: string | null;
+  clearScreenshotUploadError: () => void;
+  overlayUploadError: string | null;
+  clearOverlayUploadError: () => void;
   handleExport: () => void;
   getBackgroundStyle: (screenshot: Screenshot) => string;
   resetEditor: () => void;
@@ -140,7 +147,7 @@ type LegacyScreenshotFields = {
 };
 
 // Default screenshot for new editors
-const createDefaultScreenshot = (
+export const createDefaultScreenshot = (
   defaultDeviceId: string = devices[0].id,
   defaultColorId: string = devices[0].colors[0].id,
 ): Screenshot => {
@@ -259,6 +266,40 @@ const getInitialState = (): { projects: Project[]; activeProjectId: string } => 
   return { projects: [defaultProject], activeProjectId: defaultProject.id };
 };
 
+function formatUploadErrorMessage(
+  error: unknown,
+  fallbackMessage: string,
+): string {
+  if (error instanceof Error) {
+    const msg = error.message;
+    if (msg.toLowerCase().includes("empty")) {
+      return "The selected file is empty.";
+    }
+    if (
+      msg.includes("exceeds the maximum allowed size") ||
+      msg.includes("exceeds the allowed limit") ||
+      msg.includes("exceeds the 250KB limit")
+    ) {
+      return msg;
+    }
+    if (msg.includes("Unsupported file type")) {
+      return "Unsupported file format. Please upload a PNG, JPEG, WebP, or SVG.";
+    }
+    if (
+      msg.includes("Failed to load") ||
+      msg.includes("timed out") ||
+      msg.includes("Unable to determine image dimensions")
+    ) {
+      return "Unable to decode image. Please check that the file is not corrupted.";
+    }
+    if (msg.includes("canvas")) {
+      return "Browser could not process the image.";
+    }
+    return msg;
+  }
+  return fallbackMessage;
+}
+
 export const EditorProvider = ({ children }: { children: ReactNode }) => {
   // Project state
   const [initialState] = useState(getInitialState);
@@ -317,6 +358,23 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
   const previewRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const activeScreenshotIdRef = useRef(activeScreenshotId);
+  const latestScreenshotUploadId = useRef<Record<string, number>>({});
+
+  const [screenshotUploadError, setScreenshotUploadError] = useState<string | null>(null);
+  const [overlayUploadError, setOverlayUploadError] = useState<string | null>(null);
+
+  const clearScreenshotUploadError = useCallback(() => {
+    setScreenshotUploadError(null);
+  }, []);
+
+  const clearOverlayUploadError = useCallback(() => {
+    setOverlayUploadError(null);
+  }, []);
+
+  useEffect(() => {
+    activeScreenshotIdRef.current = activeScreenshotId;
+  }, [activeScreenshotId]);
 
   // Sync project state when local state changes
   const updateProjectState = useCallback(() => {
@@ -533,7 +591,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
       fontFamily: activeScreenshot.fontFamily,
       overlayImages: [],
       devices: activeScreenshot.devices.map((device) =>
-        cloneDeviceInstance(device, { id: generateId() }),
+        cloneDeviceInstance(device, { id: generateId(), screenshotSrc: null }),
       ),
       activeDeviceId: activeScreenshot.devices[0]?.id ?? generateId(),
     };
@@ -687,7 +745,12 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [isDragging, handleElementMouseMove, handleElementMouseUp]);
 
-  const addOverlayImageSource = (src: string, name?: string) => {
+  const addOverlayImageSource = (
+    src: string,
+    name?: string,
+    targetScreenshotId?: string,
+  ) => {
+    const screenshotId = targetScreenshotId ?? activeScreenshot.id;
     const img = new Image();
     img.onload = () => {
       const aspectRatio = img.width / img.height || 1;
@@ -709,29 +772,55 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
           offsetY: 10,
         },
       };
-      updateActiveScreenshot({
-        overlayImages: [...activeScreenshot.overlayImages, newImage],
+
+      setScreenshotsState((prev) => {
+        const target = prev.find((s) => s.id === screenshotId);
+        if (!target) return prev;
+        return prev.map((s) =>
+          s.id === screenshotId
+            ? { ...s, overlayImages: [...s.overlayImages, newImage] }
+            : s,
+        );
       });
-      setSelectedElement({
-        type: "image",
-        id: newImage.id,
-        screenshotId: activeScreenshot.id,
-      });
+
+      if (activeScreenshotIdRef.current === screenshotId) {
+        setSelectedElement({
+          type: "image",
+          id: newImage.id,
+          screenshotId,
+        });
+      }
     };
     img.src = src;
   };
 
-  const addOverlayImage = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result;
-      if (typeof result === "string") addOverlayImageSource(result);
-    };
-    reader.readAsDataURL(file);
+  const addOverlayImage = async (file: File) => {
+    const targetScreenshotId = activeScreenshot?.id;
+    if (!targetScreenshotId) return;
+
+    setOverlayUploadError(null);
+
+    try {
+      const optimized = await optimizeImageFile(file, {
+        maxDimension: 1280,
+        quality: 0.85,
+        maxInputBytes: 10 * 1024 * 1024,
+      });
+      addOverlayImageSource(optimized.dataUrl, file.name, targetScreenshotId);
+      setOverlayUploadError(null);
+    } catch (error) {
+      console.error("Overlay image upload failed:", error);
+      setOverlayUploadError(
+        formatUploadErrorMessage(
+          error,
+          "Failed to upload overlay image. Please try again.",
+        ),
+      );
+    }
   };
 
   const addIcon = (src: string, name: string) => {
-    addOverlayImageSource(src, name);
+    addOverlayImageSource(src, name, activeScreenshot?.id);
   };
 
   const removeOverlayImage = (imageId: string) => {
@@ -844,6 +933,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     const nextDevice = activeDevice
       ? cloneDeviceInstance(activeDevice, {
           id: generateId(),
+          screenshotSrc: null,
           x: Math.min(activeDevice.x + 12, 88),
           y: Math.min(activeDevice.y + 4, 70),
         })
@@ -934,24 +1024,73 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
+    const target = event.target;
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result;
-      if (typeof result === "string") {
-        updateActiveScreenshot({
-          devices: activeScreenshot.devices.map((device) =>
-            device.id === activeDevice.id
-              ? { ...device, screenshotSrc: result }
-              : device,
-          ),
-        });
+
+    const targetScreenshotId = activeScreenshot?.id;
+    const targetDeviceId = activeDevice?.id;
+    if (!targetScreenshotId || !targetDeviceId) return;
+
+    setScreenshotUploadError(null);
+
+    const uploadId =
+      (latestScreenshotUploadId.current[targetDeviceId] ?? 0) + 1;
+    latestScreenshotUploadId.current[targetDeviceId] = uploadId;
+
+    try {
+      const optimized = await optimizeImageFile(file, {
+        maxDimension: 2560,
+        quality: 0.85,
+        maxInputBytes: 15 * 1024 * 1024,
+      });
+
+      // Discard if superseded by a newer upload for the same target device
+      if (latestScreenshotUploadId.current[targetDeviceId] !== uploadId) {
+        return;
       }
-    };
-    reader.readAsDataURL(file);
-    event.target.value = "";
+
+      setScreenshotsState((prevScreenshots) => {
+        const screenshot = prevScreenshots.find(
+          (s) => s.id === targetScreenshotId,
+        );
+        if (!screenshot) return prevScreenshots;
+
+        const device = screenshot.devices.find((d) => d.id === targetDeviceId);
+        if (!device) return prevScreenshots;
+
+        return prevScreenshots.map((s) => {
+          if (s.id !== targetScreenshotId) return s;
+          return {
+            ...s,
+            devices: s.devices.map((d) =>
+              d.id === targetDeviceId
+                ? { ...d, screenshotSrc: optimized.dataUrl }
+                : d,
+            ),
+          };
+        });
+      });
+      setScreenshotUploadError(null);
+    } catch (error) {
+      if (latestScreenshotUploadId.current[targetDeviceId] !== uploadId) {
+        return;
+      }
+      console.error("Screenshot upload failed:", error);
+      setScreenshotUploadError(
+        formatUploadErrorMessage(
+          error,
+          "Failed to upload screenshot image. Please try again.",
+        ),
+      );
+    } finally {
+      if (target) {
+        target.value = "";
+      }
+    }
   };
 
   const getBackgroundStyle = (screenshot: Screenshot) => {
@@ -1063,6 +1202,10 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
         bringImageToFront,
         sendImageToBack,
         handleFileUpload,
+        screenshotUploadError,
+        clearScreenshotUploadError,
+        overlayUploadError,
+        clearOverlayUploadError,
         handleExport,
         getBackgroundStyle,
         resetEditor,

@@ -84,6 +84,13 @@ A free, open-source tool to create stunning, high-converting screenshots for the
 - **Helpful rich-text tooltips** — formatting controls include hover/focus tooltips
 - **Dark mode UI** — sleek dark interface that's easy on the eyes
 
+### 🤖 MCP Automation
+
+- **Headless Store Asset Export** — export full-resolution PNG screenshots programmatically without manual UI interaction
+- **Model Context Protocol (MCP)** — stdio integration for Antigravity and Cursor
+- **Sandboxed Filesystem Security** — path boundary enforcement, symlink dereferencing, UNC protection, and error sanitization
+- See the [MCP Setup Guide](docs/APPSHOTS_MCP_SETUP.md) for full configuration details.
+
 ## 🚀 Quick Start
 
 ### Prerequisites

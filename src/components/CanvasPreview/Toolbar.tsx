@@ -63,10 +63,11 @@ export const Toolbar = ({ onAddScreenshot, screenshotCount }: ToolbarProps) => {
           {autosaveStatus === "error" && (
             <span
               className="flex items-center gap-1 text-red-400"
-              title="Browser storage could not save the latest changes"
+              title="The latest changes could not be saved and may be lost on reload"
             >
               <AlertCircle className="w-3.5 h-3.5 text-red-400" />
               <span className="font-medium">Save failed</span>
+              <span className="text-red-400/80">(unsaved changes)</span>
             </span>
           )}
         </div>

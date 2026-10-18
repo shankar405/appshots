@@ -60,6 +60,10 @@ export const RightSidebar = () => {
     sendDeviceBackward,
     bringImageForward,
     sendImageBackward,
+    screenshotUploadError,
+    clearScreenshotUploadError,
+    overlayUploadError,
+    clearOverlayUploadError,
   } = useEditor();
 
   return (
@@ -78,6 +82,8 @@ export const RightSidebar = () => {
           device={activeDevice}
           fileInputRef={fileInputRef}
           onFileUpload={handleFileUpload}
+          error={screenshotUploadError}
+          onClearError={clearScreenshotUploadError}
         />
 
         <PositionPresets
@@ -135,6 +141,8 @@ export const RightSidebar = () => {
           onUpdateShadow={updateOverlayImageShadow}
           onBringForward={bringImageForward}
           onSendBackward={sendImageBackward}
+          error={overlayUploadError}
+          onClearError={clearOverlayUploadError}
         />
       </div>
     </aside>

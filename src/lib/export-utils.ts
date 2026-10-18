@@ -11,12 +11,13 @@ import { getDeviceColorById, getDeviceSpecById } from "./device-instances";
 import { getRenderableDevicesForScreenshot } from "./device-overflow";
 import JSZip from "jszip";
 
-interface ExportOptions {
+export interface ExportOptions {
   screenshots: Screenshot[];
   exportSize: ExportSize;
   previewDimensions: { width: number; height: number };
   headlineFontSize: number;
   subheadlineFontSize: number;
+  skipDownload?: boolean;
 }
 
 /**
@@ -899,6 +900,7 @@ export const exportScreenshots = async ({
   previewDimensions,
   headlineFontSize,
   subheadlineFontSize,
+  skipDownload = false,
 }: ExportOptions) => {
   // Wait for fonts to be loaded before exporting
   await document.fonts.ready;
@@ -1044,10 +1046,14 @@ export const exportScreenshots = async ({
     exportedFiles.push({ name: filename, data: dataURL });
   }
 
-  // Download: single file directly, multiple files as ZIP
-  if (exportedFiles.length === 1) {
-    downloadFile(exportedFiles[0].data, exportedFiles[0].name);
-  } else if (exportedFiles.length > 1) {
-    await downloadAsZip(exportedFiles);
+  // Download: single file directly, multiple files as ZIP unless skipDownload is requested
+  if (!skipDownload) {
+    if (exportedFiles.length === 1) {
+      downloadFile(exportedFiles[0].data, exportedFiles[0].name);
+    } else if (exportedFiles.length > 1) {
+      await downloadAsZip(exportedFiles);
+    }
   }
+
+  return exportedFiles;
 };

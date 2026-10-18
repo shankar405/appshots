@@ -159,13 +159,17 @@ export const useEditorPersistence = ({
     };
   }, [saveState]);
 
-  // Save immediately on page unload
+  // Save immediately on page unload and request confirmation if save fails
   useEffect(() => {
-    const handleBeforeUnload = () => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
       }
-      saveState();
+      const saved = saveState();
+      if (!saved) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);

@@ -237,3 +237,54 @@ describe("useEditorPersistence autosave status lifecycle", () => {
     expect(setItemSpy).not.toHaveBeenCalled();
   });
 });
+
+describe("useEditorPersistence beforeunload confirmation", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("attempts immediate save on beforeunload and requests browser confirmation if save fails", () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new DOMException("Quota exceeded", "QuotaExceededError");
+    });
+
+    renderHook(() =>
+      useEditorPersistence({
+        projects: mockValidState.projects,
+        activeProjectId: mockValidState.activeProjectId,
+      }),
+    );
+
+    const event = new Event("beforeunload", { cancelable: true });
+    window.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(true);
+    // In JSDOM and standard DOM, Event.prototype.returnValue getter returns !defaultPrevented (false)
+    expect((event as unknown as { returnValue: unknown }).returnValue).toBe(false);
+  });
+
+  it("does not prevent default on beforeunload if immediate save succeeds", () => {
+    const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
+
+    renderHook(() =>
+      useEditorPersistence({
+        projects: mockValidState.projects,
+        activeProjectId: mockValidState.activeProjectId,
+      }),
+    );
+
+    const event = new Event("beforeunload", { cancelable: true });
+    window.dispatchEvent(event);
+
+    expect(setItemSpy).toHaveBeenCalled();
+    expect(event.defaultPrevented).toBe(false);
+  });
+});
+
