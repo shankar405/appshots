@@ -6,6 +6,7 @@
  * 2. export_store_assets
  * 3. analyze_app_for_store
  * 4. generate_screenshot_plan
+ * 5. build_and_export_store_assets
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -25,6 +26,10 @@ import {
   GenerateScreenshotPlanToolInputSchema,
   generateScreenshotPlan,
 } from "./tools/generate-plan";
+import {
+  BuildAndExportStoreAssetsInputSchema,
+  buildAndExportStoreAssets,
+} from "./tools/build-and-export";
 import type { AIProvider } from "./ai/provider";
 import { getActiveAIProvider } from "./ai/provider-factory";
 
@@ -162,6 +167,38 @@ export function createAppshotsServer(options?: AppshotsServerOptions): McpServer
             {
               type: "text",
               text: `Failed to generate screenshot plan: ${
+                error instanceof Error ? error.message : String(error)
+              }`,
+            },
+          ],
+        };
+      }
+    },
+  );
+
+  // Tool 5: build_and_export_store_assets
+  server.tool(
+    "build_and_export_store_assets",
+    "Build and export verified, full-resolution store-ready PNG screenshots directly from an explicitly approved screenshot plan.",
+    BuildAndExportStoreAssetsInputSchema.shape,
+    async (args) => {
+      try {
+        const result = await buildAndExportStoreAssets(args);
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      } catch (error) {
+        return {
+          isError: true,
+          content: [
+            {
+              type: "text",
+              text: `Failed to build and export store assets: ${
                 error instanceof Error ? error.message : String(error)
               }`,
             },

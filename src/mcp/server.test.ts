@@ -3,16 +3,18 @@
  *
  * Verifies that an MCP client session over standard I/O can:
  * 1. Start the server over stdio.
- * 2. Discover all 4 available tools:
+ * 2. Discover all 5 available tools:
  *    - build_appshots_project
  *    - export_store_assets
  *    - analyze_app_for_store
  *    - generate_screenshot_plan
+ *    - build_and_export_store_assets
  * 3. Call build_appshots_project with a deterministic fixture.
  * 4. Call export_store_assets and verify output PNGs on disk.
  * 5. Call analyze_app_for_store against a local test fixture and return schema-valid analysis.
  * 6. Call generate_screenshot_plan and return an ordered, reviewable plan with rich text.
- * 7. Handle invalid inputs and errors gracefully without crashing.
+ * 7. Call build_and_export_store_assets with an approved plan and export store-ready PNGs.
+ * 8. Handle invalid inputs and errors gracefully without crashing.
  */
 
 import fs from "node:fs";
@@ -102,7 +104,7 @@ describe("AppShots MCP Server - Stdio Client Integration", () => {
     });
 
     await client.connect(transport);
-  });
+  }, 60000);
 
   afterAll(async () => {
     try {
@@ -116,7 +118,7 @@ describe("AppShots MCP Server - Stdio Client Integration", () => {
     }
   });
 
-  it("discovers all four available tools", async () => {
+  it("discovers all five available tools", async () => {
     const listResult = await client.listTools();
     const toolNames = listResult.tools.map((t) => t.name);
 
@@ -124,14 +126,18 @@ describe("AppShots MCP Server - Stdio Client Integration", () => {
     expect(toolNames).toContain("export_store_assets");
     expect(toolNames).toContain("analyze_app_for_store");
     expect(toolNames).toContain("generate_screenshot_plan");
+    expect(toolNames).toContain("build_and_export_store_assets");
 
-    expect(toolNames.length).toBe(4);
+    expect(toolNames.length).toBe(5);
 
     const analyzeTool = listResult.tools.find((t) => t.name === "analyze_app_for_store");
     expect(analyzeTool?.description).toContain("factual App Store product analysis");
 
     const planTool = listResult.tools.find((t) => t.name === "generate_screenshot_plan");
     expect(planTool?.description).toContain("ordered, reviewable screenshot plan");
+
+    const bridgeTool = listResult.tools.find((t) => t.name === "build_and_export_store_assets");
+    expect(bridgeTool?.description).toContain("approved screenshot plan");
   });
 
   it("calls build_appshots_project with deterministic fixture and returns valid project JSON", async () => {
@@ -314,6 +320,116 @@ describe("AppShots MCP Server - Stdio Client Integration", () => {
     expect(plan.readyForProjectBuilder).toBe(true);
   }, 45000);
 
+  it("calls build_and_export_store_assets over stdio with an approved plan and generates store assets", async () => {
+    const rawCapturesDir = path.join(TEST_OUTPUT_DIR, "pipeline-raw-captures");
+    const exportOutputDir = path.join(TEST_OUTPUT_DIR, "pipeline-store-assets");
+
+    // 1. Analyze
+    const analyzeResult = (await client.callTool({
+      name: "analyze_app_for_store",
+      arguments: {
+        url: fixtureBaseUrl,
+        routes: ["/"],
+        outputDir: rawCapturesDir,
+      },
+    })) as { content: Array<{ type: string; text: string }> };
+
+    const analysis = JSON.parse(analyzeResult.content[0].text);
+
+    // 2. Generate plan
+    const planResult = (await client.callTool({
+      name: "generate_screenshot_plan",
+      arguments: {
+        analysis,
+        targetStore: "apple-app-store",
+        targetDevice: "iphone-15-pro-max",
+        slideCount: 1,
+        customCopyOverrides: [
+          {
+            slideIndex: 1,
+            headline: "Approved <b>Pipeline Copy</b>",
+            subheadline: "Directly reviewed and verified by user",
+          },
+        ],
+      },
+    })) as { content: Array<{ type: string; text: string }> };
+
+    const plan = JSON.parse(planResult.content[0].text);
+
+    // 3. User reviews and approves plan -> Agent invokes build_and_export_store_assets
+    const pipelineResult = (await client.callTool({
+      name: "build_and_export_store_assets",
+      arguments: {
+        projectName: "TaskMaster End-To-End Store Assets",
+        plan,
+        outputDir: exportOutputDir,
+        preset: "6.7",
+        filenamePrefix: "approved-store-shot",
+      },
+    })) as { content: Array<{ type: string; text: string }> };
+
+    expect(pipelineResult.content[0].type).toBe("text");
+    const parsedPipeline = JSON.parse(pipelineResult.content[0].text);
+
+    expect(parsedPipeline.success).toBe(true);
+    expect(parsedPipeline.projectName).toBe("TaskMaster End-To-End Store Assets");
+    expect(parsedPipeline.files.length).toBe(3);
+    expect(parsedPipeline.files[0].filename).toBe("approved-store-shot-1.png");
+    expect(parsedPipeline.files[0].width).toBe(1284);
+    expect(parsedPipeline.files[0].height).toBe(2778);
+    expect(parsedPipeline.files[1].filename).toBe("approved-store-shot-2.png");
+    expect(parsedPipeline.files[2].filename).toBe("approved-store-shot-3.png");
+
+    // Preserved reviewed copy
+    expect(parsedPipeline.slides[0].headline).toBe("Approved <b>Pipeline Copy</b>");
+    expect(parsedPipeline.slides[0].subheadline).toBe("Directly reviewed and verified by user");
+
+    // Verify on disk
+    const onDiskFile = path.join(exportOutputDir, "approved-store-shot-1.png");
+    expect(fs.existsSync(onDiskFile)).toBe(true);
+    const verified = verifyPngBuffer(fs.readFileSync(onDiskFile));
+    expect(verified.width).toBe(1284);
+    expect(verified.height).toBe(2778);
+  }, 60000);
+
+  it("calls build_and_export_store_assets with google-play store and receives clear error", async () => {
+    const rawCapturesDir = path.join(TEST_OUTPUT_DIR, "pipeline-raw-captures");
+    const exportOutputDir = path.join(TEST_OUTPUT_DIR, "pipeline-google-play-assets");
+
+    const analyzeResult = (await client.callTool({
+      name: "analyze_app_for_store",
+      arguments: {
+        url: fixtureBaseUrl,
+        routes: ["/"],
+        outputDir: rawCapturesDir,
+      },
+    })) as { content: Array<{ type: string; text: string }> };
+
+    const analysis = JSON.parse(analyzeResult.content[0].text);
+
+    const planResult = (await client.callTool({
+      name: "generate_screenshot_plan",
+      arguments: {
+        analysis,
+        targetStore: "google-play",
+        slideCount: 1,
+      },
+    })) as { content: Array<{ type: string; text: string }> };
+
+    const plan = JSON.parse(planResult.content[0].text);
+
+    const callResult = (await client.callTool({
+      name: "build_and_export_store_assets",
+      arguments: {
+        plan,
+        outputDir: exportOutputDir,
+      },
+    })) as { isError?: boolean; content: Array<{ type: string; text: string }> };
+
+    expect(callResult.isError).toBe(true);
+    expect(callResult.content[0].text).toContain("Google Play export is not currently supported");
+  });
+
   it("handles invalid inputs and errors gracefully without crashing the server", async () => {
     // 1. Build with missing screenshot file
     const invalidBuild = (await client.callTool({
@@ -333,7 +449,7 @@ describe("AppShots MCP Server - Stdio Client Integration", () => {
 
     // 2. Server remains alive and responsive after error: list tools still works
     const toolsAfterError = await client.listTools();
-    expect(toolsAfterError.tools.length).toBe(4);
+    expect(toolsAfterError.tools.length).toBe(5);
 
     // 3. Export with empty/invalid project
     const invalidExport = (await client.callTool({
@@ -357,5 +473,17 @@ describe("AppShots MCP Server - Stdio Client Integration", () => {
 
     expect(invalidPlan.isError).toBe(true);
     expect(invalidPlan.content[0].text).toContain("Invalid analysis JSON string");
+
+    // 5. Build and export with invalid plan
+    const invalidPipeline = (await client.callTool({
+      name: "build_and_export_store_assets",
+      arguments: {
+        plan: "not a valid json string",
+        outputDir: TEST_OUTPUT_DIR,
+      },
+    })) as { isError?: boolean; content: Array<{ type: string; text: string }> };
+
+    expect(invalidPipeline.isError).toBe(true);
+    expect(invalidPipeline.content[0].text).toContain("Invalid screenshot plan");
   });
 });
