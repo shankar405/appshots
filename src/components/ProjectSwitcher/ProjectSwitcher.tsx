@@ -18,6 +18,7 @@ import {
   Trash2,
   Check,
   X,
+  Upload,
 } from "lucide-react";
 import { useEditor } from "../../context/EditorContext";
 import type { Project } from "../../types";
@@ -157,6 +158,7 @@ export const ProjectSwitcher = () => {
     renameProject,
     deleteProject,
     switchProject,
+    importProject,
   } = useEditor();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -164,6 +166,29 @@ export const ProjectSwitcher = () => {
   const [newProjectName, setNewProjectName] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const newProjectInputRef = useRef<HTMLInputElement>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target?.result as string;
+        const parsed = JSON.parse(text) as Project;
+        if (!parsed || !parsed.screenshots || !Array.isArray(parsed.screenshots)) {
+          alert("Invalid project file: missing screenshots array.");
+          return;
+        }
+        importProject(parsed);
+        setIsOpen(false);
+      } catch (err) {
+        alert("Failed to parse project JSON file.");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -283,13 +308,29 @@ export const ProjectSwitcher = () => {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => setIsCreating(true)}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-violet-400 hover:bg-zinc-800 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                New Project
-              </button>
+              <div className="flex flex-col">
+                <button
+                  onClick={() => setIsCreating(true)}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-violet-400 hover:bg-zinc-800 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  New Project
+                </button>
+                <button
+                  onClick={() => importInputRef.current?.click()}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
+                >
+                  <Upload className="w-4 h-4" />
+                  Import Project (.json)
+                </button>
+                <input
+                  ref={importInputRef}
+                  type="file"
+                  accept=".json,application/json"
+                  onChange={handleImportFile}
+                  className="hidden"
+                />
+              </div>
             )}
           </div>
         </div>

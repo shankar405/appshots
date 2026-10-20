@@ -3,6 +3,7 @@ import { RightSidebar } from "./RightSidebar";
 import { CanvasPreview } from "./CanvasPreview";
 import { FontPicker } from "./FontPicker";
 import { GitHubStarModal } from "./GitHubStarModal";
+import { StudioModal } from "./Studio";
 import { useEditor } from "../context/EditorContext";
 import { GITHUB_REPO_URL } from "../constants";
 import { Star, X } from "lucide-react";
@@ -14,6 +15,8 @@ export const EditorLayout = () => {
     setIsFontPickerOpen,
     isStarModalOpen,
     setIsStarModalOpen,
+    isStudioOpen,
+    setIsStudioOpen,
     activeScreenshot,
     updateActiveScreenshot,
   } = useEditor();
@@ -59,6 +62,10 @@ export const EditorLayout = () => {
         <GitHubStarModal
           isOpen={isStarModalOpen}
           onClose={() => setIsStarModalOpen(false)}
+        />
+        <StudioModal
+          isOpen={isStudioOpen}
+          onClose={() => setIsStudioOpen(false)}
         />
       </div>
     </div>

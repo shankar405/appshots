@@ -4,7 +4,7 @@
  * Top toolbar for the canvas preview area with screenshot management controls and autosave status.
  */
 
-import { Plus, Check, Loader2, AlertCircle } from "lucide-react";
+import { Plus, Check, Loader2, AlertCircle, Sparkles } from "lucide-react";
 import { useEditor } from "../../context/EditorContext";
 
 interface ToolbarProps {
@@ -27,7 +27,7 @@ interface ToolbarProps {
  * <Toolbar onAddScreenshot={addScreenshot} screenshotCount={3} />
  */
 export const Toolbar = ({ onAddScreenshot, screenshotCount }: ToolbarProps) => {
-  const { autosaveStatus } = useEditor();
+  const { autosaveStatus, setIsStudioOpen } = useEditor();
 
   return (
     <div className="h-14 border-b border-white/10 bg-[#141414] flex items-center px-4 gap-4">
@@ -38,6 +38,14 @@ export const Toolbar = ({ onAddScreenshot, screenshotCount }: ToolbarProps) => {
         >
           <Plus className="w-4 h-4" />
           Add Screenshot
+        </button>
+        <button
+          onClick={() => setIsStudioOpen(true)}
+          className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium px-3 py-1.5 rounded-md transition-colors shadow-sm"
+          title="Open AI Screenshot Studio (Phase 3)"
+        >
+          <Sparkles className="w-4 h-4 text-violet-200" />
+          <span>Screenshot Studio</span>
         </button>
       </div>
       <div className="flex-1" />

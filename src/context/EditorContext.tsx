@@ -33,6 +33,7 @@ import {
   clearPersistedState,
   type AutosaveStatus,
 } from "../lib/useLocalStorage";
+import * as storage from "../lib/storage";
 import { optimizeImageFile } from "../lib/image-optimizer";
 
 function generateId() {
@@ -51,12 +52,15 @@ interface EditorContextType {
   renameProject: (id: string, name: string) => void;
   deleteProject: (id: string) => void;
   switchProject: (id: string) => void;
+  importProject: (project: Project) => void;
 
   // State
   isFontPickerOpen: boolean;
   setIsFontPickerOpen: (open: boolean) => void;
   isStarModalOpen: boolean;
   setIsStarModalOpen: (open: boolean) => void;
+  isStudioOpen: boolean;
+  setIsStudioOpen: (open: boolean) => void;
   selectedDeviceId: string;
   setSelectedDeviceId: (id: string) => void;
   selectedColorId: string;
@@ -251,7 +255,12 @@ const createDefaultProject = (name: string = "My Project"): Project => {
 };
 
 // Initialize editor state from persisted storage or create default
-const getInitialState = (): { projects: Project[]; activeProjectId: string } => {
+const getInitialState = (): {
+  projects: Project[];
+  activeProjectId: string;
+  lastSaved: number;
+  isFallback: boolean;
+} => {
   const persistedState = loadPersistedState();
   if (persistedState?.projects && persistedState.projects.length > 0) {
     const projects = persistedState.projects.map(normalizeProject);
@@ -260,10 +269,20 @@ const getInitialState = (): { projects: Project[]; activeProjectId: string } => 
       projects.some((p) => p.id === persistedState.activeProjectId)
         ? persistedState.activeProjectId
         : projects[0]?.id || generateId();
-    return { projects, activeProjectId };
+    return {
+      projects,
+      activeProjectId,
+      lastSaved: persistedState.lastSaved || 0,
+      isFallback: false,
+    };
   }
   const defaultProject = createDefaultProject();
-  return { projects: [defaultProject], activeProjectId: defaultProject.id };
+  return {
+    projects: [defaultProject],
+    activeProjectId: defaultProject.id,
+    lastSaved: 0,
+    isFallback: true,
+  };
 };
 
 function formatUploadErrorMessage(
@@ -303,6 +322,9 @@ function formatUploadErrorMessage(
 export const EditorProvider = ({ children }: { children: ReactNode }) => {
   // Project state
   const [initialState] = useState(getInitialState);
+  const initialLastSaved = useRef(initialState.lastSaved);
+  const initialWasFallback = useRef(initialState.isFallback);
+  const hasUserEdited = useRef(false);
   const [projects, setProjects] = useState<Project[]>(initialState.projects);
   const [activeProjectId, setActiveProjectId] = useState<string>(
     initialState.activeProjectId,
@@ -315,6 +337,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
   // Initialize state from persisted values or defaults
   const [isFontPickerOpen, setIsFontPickerOpen] = useState(false);
   const [isStarModalOpen, setIsStarModalOpen] = useState(false);
+  const [isStudioOpen, setIsStudioOpen] = useState(false);
   const [selectedDeviceId, setSelectedDeviceIdState] = useState(
     activeProject.selectedDeviceId,
   );
@@ -477,7 +500,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     setSubheadlineFontSizeState(size);
   };
 
-  const applyProjectState = (project: Project) => {
+  const applyProjectState = useCallback((project: Project) => {
     setActiveProjectId(project.id);
     setSelectedDeviceIdState(project.selectedDeviceId);
     setSelectedColorIdState(project.selectedColorId);
@@ -487,16 +510,60 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     setHeadlineFontSizeState(project.headlineFontSize);
     setSubheadlineFontSizeState(project.subheadlineFontSize);
     setSelectedElement(null);
-  };
+  }, []);
+
+  // Asynchronously reconcile projects from IndexedDB on initial mount
+  useEffect(() => {
+    let isCancelled = false;
+    storage
+      .getOrMigratePersistedState()
+      .then((persistedState) => {
+        if (isCancelled || !persistedState || hasUserEdited.current) return;
+        // If localStorage already loaded this exact state, no need to re-apply
+        const isNewer = (persistedState.lastSaved || 0) > initialLastSaved.current;
+        const wasFallback = initialWasFallback.current;
+        const isDifferent =
+          persistedState.activeProjectId !== initialState.activeProjectId ||
+          persistedState.projects.length !== initialState.projects.length;
+        if (!isNewer && !wasFallback && !isDifferent) {
+          return;
+        }
+
+        const normalizedProjects = persistedState.projects.map(normalizeProject);
+        const nextActiveId =
+          persistedState.activeProjectId &&
+          normalizedProjects.some((p) => p.id === persistedState.activeProjectId)
+            ? persistedState.activeProjectId
+            : normalizedProjects[0]?.id || "";
+
+        const targetProject =
+          normalizedProjects.find((p) => p.id === nextActiveId) ||
+          normalizedProjects[0];
+
+        if (targetProject) {
+          applyProjectState(targetProject);
+        }
+        setProjects(normalizedProjects);
+      })
+      .catch((err) => {
+        console.error("Failed to reconcile state from IndexedDB:", err);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [applyProjectState]);
 
   // Project management functions
   const createProject = (name: string) => {
+    hasUserEdited.current = true;
     const newProject = createDefaultProject(name);
     setProjects((prev) => [...prev, newProject]);
     applyProjectState(newProject);
   };
 
   const renameProject = (id: string, name: string) => {
+    hasUserEdited.current = true;
     setProjects((prev) =>
       prev.map((p) =>
         p.id === id ? { ...p, name, updatedAt: Date.now() } : p,
@@ -508,6 +575,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     // Don't delete the last project
     if (projects.length <= 1) return;
 
+    hasUserEdited.current = true;
     setProjects((prev) => prev.filter((p) => p.id !== id));
 
     // If deleting active project, switch to another
@@ -522,7 +590,24 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
   const switchProject = (id: string) => {
     const project = projects.find((p) => p.id === id);
     if (!project) return;
+    hasUserEdited.current = true;
     applyProjectState(project);
+  };
+
+  const importProject = (project: Project) => {
+    if (!project || !project.screenshots || project.screenshots.length === 0) {
+      throw new Error("Cannot import invalid project: missing screenshots.");
+    }
+    const normalized = normalizeProject(project);
+    hasUserEdited.current = true;
+    setProjects((prev) => {
+      const exists = prev.some((p) => p.id === normalized.id);
+      if (exists) {
+        return prev.map((p) => (p.id === normalized.id ? normalized : p));
+      }
+      return [...prev, normalized];
+    });
+    applyProjectState(normalized);
   };
 
   const selectedDevice =
@@ -549,6 +634,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 
   const updateActiveScreenshot = useCallback(
     (updates: Partial<Screenshot>) => {
+      hasUserEdited.current = true;
       updateScreenshotById(activeScreenshotId, updates);
     },
     [activeScreenshotId, updateScreenshotById],
@@ -750,6 +836,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     name?: string,
     targetScreenshotId?: string,
   ) => {
+    hasUserEdited.current = true;
     const screenshotId = targetScreenshotId ?? activeScreenshot.id;
     const img = new Image();
     img.onload = () => {
@@ -795,6 +882,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addOverlayImage = async (file: File) => {
+    hasUserEdited.current = true;
     const targetScreenshotId = activeScreenshot?.id;
     if (!targetScreenshotId) return;
 
@@ -1027,6 +1115,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
+    hasUserEdited.current = true;
     const file = event.target.files?.[0];
     const target = event.target;
     if (!file) return;
@@ -1146,11 +1235,14 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
         renameProject,
         deleteProject,
         switchProject,
+        importProject,
 
         isFontPickerOpen,
         setIsFontPickerOpen,
         isStarModalOpen,
         setIsStarModalOpen,
+        isStudioOpen,
+        setIsStudioOpen,
         selectedDeviceId,
         setSelectedDeviceId,
         selectedColorId,

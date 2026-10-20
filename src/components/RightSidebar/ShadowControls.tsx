@@ -33,9 +33,9 @@ export const ShadowControls = ({
   onOffsetYChange,
 }: ShadowControlsProps) => (
   <div className="space-y-2 pt-2 border-t border-white/10">
-    <Toggle label="Shadow" enabled={shadow.enabled} onChange={onToggle} />
+    <Toggle label="Shadow" enabled={shadow?.enabled ?? false} onChange={onToggle} />
 
-    {shadow.enabled && (
+    {shadow?.enabled && (
       <>
         <div className="flex items-center gap-2">
           <span className={STYLES.labelSmall}>Color</span>

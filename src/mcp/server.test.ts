@@ -118,7 +118,7 @@ describe("AppShots MCP Server - Stdio Client Integration", () => {
     }
   });
 
-  it("discovers all five available tools", async () => {
+  it("discovers all six available tools", async () => {
     const listResult = await client.listTools();
     const toolNames = listResult.tools.map((t) => t.name);
 
@@ -127,8 +127,9 @@ describe("AppShots MCP Server - Stdio Client Integration", () => {
     expect(toolNames).toContain("analyze_app_for_store");
     expect(toolNames).toContain("generate_screenshot_plan");
     expect(toolNames).toContain("build_and_export_store_assets");
+    expect(toolNames).toContain("package_store_export");
 
-    expect(toolNames.length).toBe(5);
+    expect(toolNames.length).toBe(6);
 
     const analyzeTool = listResult.tools.find((t) => t.name === "analyze_app_for_store");
     expect(analyzeTool?.description).toContain("factual App Store product analysis");
@@ -138,6 +139,9 @@ describe("AppShots MCP Server - Stdio Client Integration", () => {
 
     const bridgeTool = listResult.tools.find((t) => t.name === "build_and_export_store_assets");
     expect(bridgeTool?.description).toContain("approved screenshot plan");
+
+    const packageTool = listResult.tools.find((t) => t.name === "package_store_export");
+    expect(packageTool?.description).toContain("ZIP archive");
   });
 
   it("calls build_appshots_project with deterministic fixture and returns valid project JSON", async () => {
@@ -430,6 +434,63 @@ describe("AppShots MCP Server - Stdio Client Integration", () => {
     expect(callResult.content[0].text).toContain("Google Play export is not currently supported");
   });
 
+  it("calls package_store_export over stdio with approved variants and generates a verified ZIP archive", async () => {
+    const demoImage = path.resolve("public/demo-image.png");
+    const zipOutputDir = path.join(TEST_OUTPUT_DIR, "stdio-zip-export");
+
+    const variantsPayload = [
+      {
+        id: "var-1",
+        presetId: "minimal-clean",
+        name: "Minimal Clean",
+        description: "Centered flat frame",
+        sourceScreen: {
+          id: "screen-1",
+          route: "/",
+          filePath: demoImage,
+          title: "Home",
+        },
+        copy: {
+          headline: "TaskMaster <b>Pro</b>",
+          subheadline: "Organize sprints effortlessly",
+        },
+        visualComposition: {
+          deviceStyle: "flat",
+          deviceScale: 80,
+          deviceOffsetY: 35,
+          deviceRotation: 0,
+          rotateY: 0,
+          rotateX: 0,
+          backgroundMode: "solid",
+          gradientPresetId: null,
+          backgroundColor: "#18181b",
+          textColor: "#ffffff",
+        },
+        deviceModel: "iphone-15-pro-max",
+        deviceColorId: "black",
+      },
+    ];
+
+    const callResult = (await client.callTool({
+      name: "package_store_export",
+      arguments: {
+        projectName: "TaskMaster Pro Bundle",
+        variants: variantsPayload,
+        outputDir: zipOutputDir,
+        archiveName: "stdio-export-bundle",
+        preset: "6.7",
+      },
+    })) as { isError?: boolean; content: Array<{ type: string; text: string }> };
+
+    expect(callResult.isError).toBeFalsy();
+    const result = JSON.parse(callResult.content[0].text);
+    expect(result.success).toBe(true);
+    expect(result.archiveFilename).toBe("stdio-export-bundle.zip");
+    expect(fs.existsSync(result.archivePath)).toBe(true);
+    expect(result.fileCount).toBe(1);
+    expect(result.manifest.totalScreenshots).toBe(1);
+  }, 45000);
+
   it("handles invalid inputs and errors gracefully without crashing the server", async () => {
     // 1. Build with missing screenshot file
     const invalidBuild = (await client.callTool({
@@ -449,7 +510,7 @@ describe("AppShots MCP Server - Stdio Client Integration", () => {
 
     // 2. Server remains alive and responsive after error: list tools still works
     const toolsAfterError = await client.listTools();
-    expect(toolsAfterError.tools.length).toBe(5);
+    expect(toolsAfterError.tools.length).toBe(6);
 
     // 3. Export with empty/invalid project
     const invalidExport = (await client.callTool({

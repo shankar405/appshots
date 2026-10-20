@@ -1,96 +1,53 @@
 /**
- * useLocalStorage Hook
+ * useLocalStorage Hook / Persistence Layer
  *
- * Custom hook for persisting editor state to localStorage.
- * Handles serialization, deserialization, and auto-save functionality.
+ * Persists editor state to IndexedDB (for large projects with base64 screenshots)
+ * and localStorage (for synchronous fast startup and fallback).
+ * Handles serialization, auto-save debounce, and stale-write prevention.
  */
 
 import { useEffect, useCallback, useRef, useState } from "react";
 import type { Project } from "../types";
+import * as storage from "./storage";
 
-/**
- * Editor state that gets persisted to localStorage
- */
-export interface PersistedEditorState {
-  /** Editor version for migration support */
-  version: number;
-  /** All projects */
-  projects: Project[];
-  /** Active project ID */
-  activeProjectId: string;
-  /** Timestamp of last save */
-  lastSaved: number;
-}
-
-/** Autosave status indicator states */
-export type AutosaveStatus = "saved" | "saving" | "error";
-
-/** Current schema version for migration support */
-const CURRENT_VERSION = 2;
-
-/** localStorage key for editor state */
-const STORAGE_KEY = "app-screenshot-editor-state";
+export type { PersistedEditorState, AutosaveStatus } from "./storage";
+export const getOrMigratePersistedState = storage.getOrMigratePersistedState;
+export const savePersistedStateAsync = storage.savePersistedStateAsync;
+export const CURRENT_VERSION = storage.CURRENT_VERSION;
 
 /** Debounce delay for auto-save (ms) */
 const AUTO_SAVE_DELAY = 1000;
 
 /**
- * Loads persisted state from localStorage.
+ * Loads persisted state synchronously from localStorage.
  *
  * @returns Persisted state or null if not found/invalid
  */
-export const loadPersistedState = (): PersistedEditorState | null => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return null;
-
-    const parsed = JSON.parse(stored) as PersistedEditorState;
-
-    // Version check - if old version, return null to reset
-    if (parsed.version !== CURRENT_VERSION) {
-      console.warn(
-        `Editor state version mismatch: ${parsed.version} !== ${CURRENT_VERSION}. Resetting state.`,
-      );
-      return null;
-    }
-
-    // Basic validation
-    if (!parsed.projects || !Array.isArray(parsed.projects)) {
-      return null;
-    }
-
-    return parsed;
-  } catch (error) {
-    console.error("Failed to load editor state from localStorage:", error);
-    return null;
-  }
+export const loadPersistedState = (): storage.PersistedEditorState | null => {
+  return storage.loadPersistedStateFromLocalStorage();
 };
 
 /**
- * Saves state to localStorage.
+ * Saves state synchronously to localStorage, and if IndexedDB is available,
+ * initiates an asynchronous write to IndexedDB.
  *
  * @param state - State to persist
- * @returns boolean indicating success or failure
+ * @returns boolean indicating localStorage success (or false if storage throws)
  */
-export const savePersistedState = (state: PersistedEditorState): boolean => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    return true;
-  } catch (error) {
-    console.error("Failed to save editor state to localStorage:", error);
-    return false;
+export const savePersistedState = (state: storage.PersistedEditorState): boolean => {
+  if (storage.isIndexedDBAvailable()) {
+    storage.savePersistedStateToIndexedDB(state).catch((err) => {
+      console.error("Failed to asynchronously save editor state to IndexedDB:", err);
+    });
   }
+  return storage.savePersistedStateToLocalStorage(state);
 };
 
 /**
  * Clears persisted state from localStorage.
  */
 export const clearPersistedState = (): void => {
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch (error) {
-    console.error("Failed to clear editor state from localStorage:", error);
-  }
+  storage.clearPersistedStateFromLocalStorage();
 };
 
 interface UseEditorPersistenceOptions {
@@ -102,13 +59,14 @@ interface UseEditorPersistenceOptions {
 
 export interface UseEditorPersistenceReturn {
   /** Current autosave status */
-  status: AutosaveStatus;
+  status: storage.AutosaveStatus;
 }
 
 /**
- * useEditorPersistence - Auto-saves editor state to localStorage
+ * useEditorPersistence - Auto-saves editor state to IndexedDB and localStorage
  *
  * Debounces saves to avoid excessive writes during rapid changes.
+ * Tracks monotonic sequence IDs to prevent stale writes from overwriting newer state.
  *
  * @param options - Current editor state values
  * @returns Object containing current autosave status
@@ -117,20 +75,47 @@ export const useEditorPersistence = ({
   projects,
   activeProjectId,
 }: UseEditorPersistenceOptions): UseEditorPersistenceReturn => {
-  const [status, setStatus] = useState<AutosaveStatus>("saved");
+  const [status, setStatus] = useState<storage.AutosaveStatus>("saved");
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isInitialMount = useRef(true);
+  const latestSaveSeq = useRef(0);
 
   const saveState = useCallback(() => {
-    const state: PersistedEditorState = {
-      version: CURRENT_VERSION,
+    const state: storage.PersistedEditorState = {
+      version: storage.CURRENT_VERSION,
       projects,
       activeProjectId,
       lastSaved: Date.now(),
     };
-    const success = savePersistedState(state);
-    setStatus(success ? "saved" : "error");
-    return success;
+    const seq = ++latestSaveSeq.current;
+
+    // 1. Synchronous attempt to localStorage
+    const lsSuccess = storage.savePersistedStateToLocalStorage(state);
+
+    if (storage.isIndexedDBAvailable()) {
+      // 2. Asynchronous attempt to IndexedDB
+      storage.savePersistedStateToIndexedDB(state)
+        .then((idbSuccess) => {
+          if (seq === latestSaveSeq.current) {
+            setStatus(idbSuccess || lsSuccess ? "saved" : "error");
+          }
+        })
+        .catch(() => {
+          if (seq === latestSaveSeq.current) {
+            setStatus(lsSuccess ? "saved" : "error");
+          }
+        });
+
+      // If localStorage succeeded right away, we can immediately reflect "saved"
+      if (lsSuccess) {
+        setStatus("saved");
+      }
+    } else {
+      // IndexedDB not available in this environment
+      setStatus(lsSuccess ? "saved" : "error");
+    }
+
+    return lsSuccess;
   }, [projects, activeProjectId]);
 
   // Debounced auto-save on state changes
@@ -165,7 +150,13 @@ export const useEditorPersistence = ({
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
       }
-      const saved = saveState();
+      const state: storage.PersistedEditorState = {
+        version: storage.CURRENT_VERSION,
+        projects,
+        activeProjectId,
+        lastSaved: Date.now(),
+      };
+      const saved = savePersistedState(state);
       if (!saved) {
         event.preventDefault();
         event.returnValue = "";
@@ -174,7 +165,7 @@ export const useEditorPersistence = ({
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [saveState]);
+  }, [projects, activeProjectId]);
 
   return { status };
 };

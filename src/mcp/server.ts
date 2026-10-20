@@ -30,6 +30,10 @@ import {
   BuildAndExportStoreAssetsInputSchema,
   buildAndExportStoreAssets,
 } from "./tools/build-and-export";
+import {
+  PackageStoreExportInputSchema,
+  packageStoreExport,
+} from "./tools/package-export";
 import type { AIProvider } from "./ai/provider";
 import { getActiveAIProvider } from "./ai/provider-factory";
 
@@ -199,6 +203,38 @@ export function createAppshotsServer(options?: AppshotsServerOptions): McpServer
             {
               type: "text",
               text: `Failed to build and export store assets: ${
+                error instanceof Error ? error.message : String(error)
+              }`,
+            },
+          ],
+        };
+      }
+    },
+  );
+
+  // Tool 6: package_store_export
+  server.tool(
+    "package_store_export",
+    "Package approved screenshot studio designs into a verified, store-ready ZIP archive with PNGs, native project file, manifest, and instructions.",
+    PackageStoreExportInputSchema.shape,
+    async (args) => {
+      try {
+        const result = await packageStoreExport(args);
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      } catch (error) {
+        return {
+          isError: true,
+          content: [
+            {
+              type: "text",
+              text: `Failed to package store export: ${
                 error instanceof Error ? error.message : String(error)
               }`,
             },

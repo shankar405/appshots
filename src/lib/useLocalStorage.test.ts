@@ -8,6 +8,7 @@ import {
   useEditorPersistence,
   type PersistedEditorState,
 } from "./useLocalStorage";
+import * as storage from "./storage";
 
 const mockValidState: PersistedEditorState = {
   version: 2,
@@ -203,6 +204,41 @@ describe("useEditorPersistence autosave status lifecycle", () => {
 
     act(() => {
       vi.advanceTimersByTime(1000);
+    });
+
+    expect(result.current.status).toBe("saved");
+  });
+
+  it("transitions to 'saved' when localStorage throws QuotaExceededError but IndexedDB is available and succeeds", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const quotaError = new DOMException("Quota exceeded", "QuotaExceededError");
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw quotaError;
+    });
+
+    vi.spyOn(storage, "isIndexedDBAvailable").mockReturnValue(true);
+    vi.spyOn(storage, "savePersistedStateToIndexedDB").mockResolvedValue(true);
+
+    const { result, rerender } = renderHook(
+      (props) => useEditorPersistence(props),
+      {
+        initialProps: {
+          projects: mockValidState.projects,
+          activeProjectId: mockValidState.activeProjectId,
+        },
+      },
+    );
+
+    rerender({
+      projects: [{ ...mockValidState.projects[0], name: "Large Project Edit" }],
+      activeProjectId: mockValidState.activeProjectId,
+    });
+
+    expect(result.current.status).toBe("saving");
+
+    await act(async () => {
+      vi.advanceTimersByTime(1000);
+      await Promise.resolve();
     });
 
     expect(result.current.status).toBe("saved");

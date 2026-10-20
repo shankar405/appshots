@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
 
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { EditorProvider, useEditor } from "./EditorContext";
 import { Toolbar } from "../components/CanvasPreview/Toolbar";
@@ -1548,4 +1548,195 @@ describe("EditorContext - Step 22 Upload Failure Feedback & UI", () => {
     expect(screen.queryByRole("alert")).toBeNull();
   });
 });
+
+describe("EditorContext - importProject", () => {
+  it("imports an external project and applies it as active project", () => {
+    let editorRef: any;
+    const ImportTestHarness = () => {
+      const editor = useEditor();
+      editorRef = editor;
+      return (
+        <div>
+          <span data-testid="active-name">{editor.activeProject.name}</span>
+          <span data-testid="count">{editor.projects.length}</span>
+        </div>
+      );
+    };
+
+    render(
+      <EditorProvider>
+        <ImportTestHarness />
+      </EditorProvider>,
+    );
+
+    expect(screen.getByTestId("active-name").textContent).toBe("My Project");
+    expect(screen.getByTestId("count").textContent).toBe("1");
+
+    const sampleProject = {
+      id: "imported-proj-1",
+      name: "Imported Studio Project",
+      createdAt: 1000,
+      updatedAt: 1000,
+      selectedDeviceId: "iphone-15-pro-max",
+      selectedColorId: "black",
+      exportSizeId: "6.7",
+      activeScreenshotId: "screen-imported-1",
+      headlineFontSize: 72,
+      subheadlineFontSize: 38,
+      screenshots: [
+        {
+          id: "screen-imported-1",
+          headline: "Imported <b>Headline</b>",
+          subheadline: "Imported Subheadline",
+          backgroundColor: "#18181b",
+          backgroundMode: "solid" as const,
+          gradientPresetId: null,
+          textColor: "#ffffff",
+          headlineX: 50,
+          headlineY: 10,
+          headlineWidth: 80,
+          subheadlineX: 50,
+          subheadlineY: 20,
+          subheadlineWidth: 80,
+          fontFamily: "Inter",
+          overlayImages: [],
+          activeDeviceId: "dev-1",
+          devices: [
+            {
+              id: "dev-1",
+              deviceId: "iphone-15-pro-max",
+              colorId: "black",
+              screenshotSrc: "data:image/png;base64,sample",
+              x: 50,
+              y: 35,
+              scale: 80,
+              rotation: 0,
+              style: "flat" as const,
+              rotateY: 0,
+              rotateX: 0,
+              shadow: {
+                enabled: true,
+                color: "rgba(0,0,0,0.3)",
+                blur: 20,
+                offsetX: 0,
+                offsetY: 10,
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    act(() => {
+      editorRef.importProject(sampleProject);
+    });
+
+    expect(screen.getByTestId("active-name").textContent).toBe("Imported Studio Project");
+    expect(screen.getByTestId("count").textContent).toBe("2");
+    expect(editorRef.activeScreenshot.headline).toBe("Imported <b>Headline</b>");
+    expect(editorRef.activeDevice.screenshotSrc).toBe("data:image/png;base64,sample");
+  });
+
+  it("throws clear error when attempting to import invalid project without screenshots", () => {
+    let editorRef: any;
+    const Harness = () => {
+      editorRef = useEditor();
+      return null;
+    };
+    render(
+      <EditorProvider>
+        <Harness />
+      </EditorProvider>,
+    );
+
+    expect(() => {
+      act(() => {
+        editorRef.importProject({ id: "invalid" } as any);
+      });
+    }).toThrow("Cannot import invalid project: missing screenshots.");
+  });
+});
+
+describe("EditorContext - IndexedDB Reconciliation on Mount", () => {
+  it("reconciles state from IndexedDB when loaded asynchronously on mount", async () => {
+    const persistedStateFromIDB = {
+      version: 2,
+      activeProjectId: "idb-project-1",
+      lastSaved: Date.now(),
+      projects: [
+        {
+          id: "idb-project-1",
+          name: "Project Restored from IndexedDB",
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          selectedDeviceId: "iphone-15-pro-max",
+          selectedColorId: "black",
+          exportSizeId: "6.7",
+          activeScreenshotId: "s-1",
+          headlineFontSize: 72,
+          subheadlineFontSize: 42,
+          screenshots: [
+            {
+              id: "s-1",
+              headline: "Restored Screenshot",
+              subheadline: "From IDB",
+              headlineColor: "#ffffff",
+              subheadlineColor: "#a1a1aa",
+              backgroundColor: "#000000",
+              backgroundGradient: "none",
+              activeDeviceId: "d-1",
+              devices: [
+                {
+                  id: "d-1",
+                  deviceId: "iphone-15-pro-max",
+                  colorId: "black",
+                  mockupUrl: "data:image/png;base64,large-mockup-data",
+                  scale: 1,
+                  position: { x: 0, y: 0 },
+                  rotation: 0,
+                  layerOrder: 0,
+                },
+              ],
+              overlayImages: [],
+              headlinePosition: { x: 50, y: 10 },
+              subheadlinePosition: { x: 50, y: 18 },
+              activeElement: null,
+            },
+          ],
+        },
+      ],
+    };
+
+    const storageModule = await import("../lib/storage");
+    vi.spyOn(storageModule, "getOrMigratePersistedState").mockResolvedValue(
+      persistedStateFromIDB as any,
+    );
+
+    const Harness = () => {
+      const { activeProject, activeScreenshot } = useEditor();
+      return (
+        <div>
+          <span data-testid="reconciled-project-name">{activeProject.name}</span>
+          <span data-testid="reconciled-headline">{activeScreenshot.headline}</span>
+        </div>
+      );
+    };
+
+    render(
+      <EditorProvider>
+        <Harness />
+      </EditorProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("reconciled-project-name").textContent,
+      ).toBe("Project Restored from IndexedDB");
+      expect(
+        screen.getByTestId("reconciled-headline").textContent,
+      ).toBe("Restored Screenshot");
+    });
+  });
+});
+
 
