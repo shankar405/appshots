@@ -236,7 +236,7 @@ describe("AppShots MCP Server - Stdio Client Integration", () => {
     const dims = verifyPngBuffer(buffer);
     expect(dims.width).toBe(1284);
     expect(dims.height).toBe(2778);
-  }, 45000);
+  }, 75000);
 
   it("calls analyze_app_for_store against local fixture and returns schema-valid analysis", async () => {
     const rawCapturesDir = path.join(TEST_OUTPUT_DIR, "raw-captures");

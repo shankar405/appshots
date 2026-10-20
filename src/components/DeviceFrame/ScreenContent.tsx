@@ -30,7 +30,7 @@ export const ScreenContent = ({ screenshotSrc }: ScreenContentProps) => {
       <img
         src={screenshotSrc}
         alt="Screenshot"
-        className="w-full h-full object-fill"
+        className="w-full h-full object-cover"
       />
     );
   }

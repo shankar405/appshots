@@ -1,0 +1,68 @@
+{
+  "6.7": {
+    "presetId": "6.7",
+    "canvasDimensions": "1284x2778",
+    "before": {
+      "scale": 92,
+      "deviceWidthPx": 1181,
+      "marginPx": 51.4,
+      "marginPct": 4
+    },
+    "after": {
+      "scale": 85,
+      "deviceWidthPx": 1091,
+      "marginPx": 96.3,
+      "marginPct": 7.5
+    },
+    "marginGainPx": 44.9,
+    "marginGainPct": 3.5
+  },
+  "6.5": {
+    "presetId": "6.5",
+    "canvasDimensions": "1242x2688",
+    "before": {
+      "scale": 92,
+      "deviceWidthPx": 1143,
+      "marginPx": 49.7,
+      "marginPct": 4
+    },
+    "after": {
+      "scale": 85,
+      "deviceWidthPx": 1056,
+      "marginPx": 93.1,
+      "marginPct": 7.5
+    },
+    "marginGainPx": 43.5,
+    "marginGainPct": 3.5
+  },
+  "5.5": {
+    "presetId": "5.5",
+    "canvasDimensions": "1242x2208",
+    "before": {
+      "scale": 92,
+      "deviceWidthPx": 1143,
+      "marginPx": 49.7,
+      "marginPct": 4
+    },
+    "after": {
+      "scale": 85,
+      "deviceWidthPx": 1056,
+      "marginPx": 93.1,
+      "marginPct": 7.5
+    },
+    "marginGainPx": 43.5,
+    "marginGainPct": 3.5
+  },
+  "ipad": {
+    "presetId": "ipad",
+    "canvasDimensions": "2048x2732",
+    "after": {
+      "scale": 72,
+      "deviceModel": "ipad-pro-12-9",
+      "deviceWidthPx": 1475,
+      "marginPx": 286.7,
+      "marginPct": 14,
+      "deviceOffsetY": 24
+    }
+  }
+}

@@ -109,16 +109,16 @@ export const VARIANT_PRESET_DEFINITIONS: Record<
     composition: {
       deviceStyle: "3d",
       deviceScale: 82,
-      deviceOffsetY: 32,
+      deviceOffsetY: 34,
       deviceRotation: -2,
       rotateY: -8,
       rotateX: 6,
       backgroundMode: "gradient",
       gradientPresetId: "sunset",
       backgroundColor: "#ff7e5f",
-      textColor: "#ffffff",
-      headlineFontSize: 76,
-      subheadlineFontSize: 40,
+      textColor: "#0f172a",
+      headlineFontSize: 74,
+      subheadlineFontSize: 38,
     },
     deviceModelFallback: "iphone-15-pro-max",
     deviceColorFallback: "natural",
@@ -132,8 +132,8 @@ export const VARIANT_PRESET_DEFINITIONS: Record<
     description: "Deep obsidian backdrop with angled perspective tilt and sleek titanium highlights.",
     composition: {
       deviceStyle: "3d",
-      deviceScale: 85,
-      deviceOffsetY: 30,
+      deviceScale: 80,
+      deviceOffsetY: 37,
       deviceRotation: 3,
       rotateY: 12,
       rotateX: -4,
@@ -141,8 +141,8 @@ export const VARIANT_PRESET_DEFINITIONS: Record<
       gradientPresetId: "royal",
       backgroundColor: "#141E30",
       textColor: "#f8fafc",
-      headlineFontSize: 74,
-      subheadlineFontSize: 38,
+      headlineFontSize: 72,
+      subheadlineFontSize: 36,
     },
     deviceModelFallback: "iphone-15-pro-max",
     deviceColorFallback: "black",
@@ -156,7 +156,7 @@ export const VARIANT_PRESET_DEFINITIONS: Record<
     description: "Expansive device composition with elegant ocean tones and magazine-style layout.",
     composition: {
       deviceStyle: "flat",
-      deviceScale: 92,
+      deviceScale: 85,
       deviceOffsetY: 40,
       deviceRotation: 0,
       rotateY: 0,
@@ -197,9 +197,16 @@ export function generateVariantsForScreen(
       ? ["minimal-clean", "bold-gradient", "dark-contrast-3d"]
       : ["minimal-clean", "bold-gradient", "dark-contrast-3d", "premium-editorial"];
 
-  const targetDevice = options?.targetDevice ?? "iphone-15-pro-max";
-  const defaultColor = options?.deviceColorId ?? "black";
+  const isIPad = options?.exportSizeId === "ipad";
+  let targetDevice = options?.targetDevice;
+  if (!targetDevice) {
+    targetDevice = isIPad ? "ipad-pro-12-9" : "iphone-15-pro-max";
+  } else if (isIPad && targetDevice === "iphone-15-pro-max") {
+    // If generic default phone was specified with iPad preset, prefer supported iPad device
+    targetDevice = "ipad-pro-12-9";
+  }
 
+  const defaultColor = options?.deviceColorId ?? (targetDevice === "ipad-pro-12-9" ? "space-gray" : "black");
   const keyElement = screen.keyElements && screen.keyElements.length > 0 ? screen.keyElements[0] : undefined;
 
   return presets.map((presetId, idx) => {
@@ -208,6 +215,26 @@ export function generateVariantsForScreen(
 
     const headline = options?.customCopy?.headline || defaultCopy.headline;
     const subheadline = options?.customCopy?.subheadline || defaultCopy.subheadline;
+
+    // Start with preset composition
+    const composition: StudioVariantComposition = { ...def.composition };
+
+    // Responsive iPad canvas adjustments to prevent clipping and balance typography
+    if (isIPad) {
+      const isTablet = targetDevice.includes("ipad") || targetDevice.includes("tab");
+      if (isTablet) {
+        composition.deviceScale = 72;
+        composition.deviceOffsetY = 24;
+      } else {
+        // Fits phone inside 2048x2732 iPad canvas without clipping
+        composition.deviceScale = 42;
+        composition.deviceOffsetY = 24;
+      }
+      composition.headlineFontSize = 76;
+      composition.subheadlineFontSize = 38;
+    }
+
+    const colorFallback = targetDevice === "ipad-pro-12-9" ? "space-gray" : def.deviceColorFallback;
 
     return {
       id: `${screen.id}-variant-${idx + 1}-${presetId}`,
@@ -225,9 +252,9 @@ export function generateVariantsForScreen(
         headline,
         subheadline,
       },
-      visualComposition: { ...def.composition },
+      visualComposition: composition,
       deviceModel: targetDevice,
-      deviceColorId: options?.deviceColorId || def.deviceColorFallback || defaultColor,
+      deviceColorId: options?.deviceColorId || colorFallback || defaultColor,
     };
   });
 }
@@ -249,8 +276,15 @@ export function variantsToProject(
   }
 
   const firstVariant = variants[0];
-  const deviceSpec = getDeviceSpecById(options?.defaultDeviceId || firstVariant.deviceModel || "iphone-15-pro-max");
   const exportPreset = exportSizes.find((s) => s.id === (options?.exportSizeId || "6.7")) || exportSizes[0];
+  const isIPad = exportPreset.id === "ipad";
+
+  let resolvedDeviceId = options?.defaultDeviceId || firstVariant.deviceModel || "iphone-15-pro-max";
+  if (isIPad && !options?.defaultDeviceId && resolvedDeviceId === "iphone-15-pro-max") {
+    resolvedDeviceId = "ipad-pro-12-9";
+  }
+
+  const deviceSpec = getDeviceSpecById(resolvedDeviceId);
 
   const projectId = `studio_project_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
   const screenshots: Screenshot[] = [];
@@ -275,13 +309,31 @@ export function variantsToProject(
 
     const deviceColor = getDeviceColorById(deviceSpec.id, variant.deviceColorId);
 
+    let scale = variant.visualComposition.deviceScale;
+    let offsetY = variant.visualComposition.deviceOffsetY;
+
+    // Responsive guardrail for iPad canvas to prevent vertical clipping
+    if (isIPad) {
+      const isTablet = deviceSpec.id.includes("ipad") || deviceSpec.id.includes("tab");
+      if (isTablet) {
+        scale = Math.min(scale, 72);
+        offsetY = Math.min(offsetY, 24);
+      } else {
+        const aspectRatio = deviceSpec.height / deviceSpec.width;
+        if (aspectRatio > 1.8) {
+          scale = Math.min(scale, 42);
+          offsetY = Math.min(offsetY, 24);
+        }
+      }
+    }
+
     const deviceInstance = createDeviceInstance({
       deviceId: deviceSpec.id,
       colorId: deviceColor.id,
       screenshotSrc,
       x: 50,
-      y: variant.visualComposition.deviceOffsetY,
-      scale: variant.visualComposition.deviceScale,
+      y: offsetY,
+      scale,
       rotation: variant.visualComposition.deviceRotation,
       style: variant.visualComposition.deviceStyle,
       rotateY: variant.visualComposition.rotateY,
@@ -312,7 +364,7 @@ export function variantsToProject(
     selectedColorId: firstVariant.deviceColorId || deviceSpec.colors[0].id,
     exportSizeId: exportPreset.id,
     activeScreenshotId: screenshots[0].id,
-    headlineFontSize: firstVariant.visualComposition.headlineFontSize || 72,
-    subheadlineFontSize: firstVariant.visualComposition.subheadlineFontSize || 38,
+    headlineFontSize: isIPad ? 76 : (firstVariant.visualComposition.headlineFontSize || 72),
+    subheadlineFontSize: isIPad ? 38 : (firstVariant.visualComposition.subheadlineFontSize || 38),
   };
 }

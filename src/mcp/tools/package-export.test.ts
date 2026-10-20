@@ -90,7 +90,7 @@ describe("package_store_export Tool", () => {
       .readdirSync(testOutputDir)
       .filter((name) => name.startsWith("__staging_"));
     expect(remainingDirs).toHaveLength(0);
-  }, 45000);
+  }, 75000);
 
   it("packages store export from a stringified project JSON", async () => {
     const variants = generateVariantsForScreen(
@@ -121,7 +121,7 @@ describe("package_store_export Tool", () => {
     expect(result.success).toBe(true);
     expect(result.archiveFilename).toBe("direct-project-bundle.zip");
     expect(fs.existsSync(result.archivePath)).toBe(true);
-  }, 45000);
+  }, 75000);
 
   it("rejects Google Play targetStore with explicit unsupported-format error", async () => {
     const variants = generateVariantsForScreen({

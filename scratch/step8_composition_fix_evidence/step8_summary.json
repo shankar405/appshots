@@ -1,0 +1,82 @@
+{
+  "step": "Phase 4 Step 2 - High-Priority Screenshot Composition Fixes",
+  "timestamp": "2026-10-20T13:55:26.712Z",
+  "defectsResolved": {
+    "defect1_ipad_clipping": {
+      "status": "RESOLVED",
+      "preset": "ipad",
+      "canvasDimensions": {
+        "width": 2048,
+        "height": 2732
+      },
+      "deviceModel": "ipad-pro-12-9",
+      "deviceScale": 72,
+      "deviceOffsetY": 24,
+      "bottomClearancePx": 109.2800000000002,
+      "evidence": "after_ipad.png"
+    },
+    "defect2_text_clearance_3d": {
+      "status": "RESOLVED",
+      "preset": "6.7",
+      "canvasDimensions": {
+        "width": 1284,
+        "height": 2778
+      },
+      "variant": "dark-contrast-3d",
+      "previousOffsetY": 30,
+      "newOffsetY": 37,
+      "previousScale": 85,
+      "newScale": 80,
+      "headlineFontSize": 72,
+      "subheadlineFontSize": 36,
+      "estimatedClearancePx": 187.8599999999999,
+      "evidence": "after_dark-contrast-3d_6.7.png"
+    },
+    "defect3_sunset_gradient_contrast": {
+      "status": "RESOLVED",
+      "preset": "6.7",
+      "variant": "bold-gradient",
+      "previousTextColor": "#ffffff",
+      "previousMinContrast": 1.75,
+      "previousCompliantAA": false,
+      "newTextColor": "#0f172a",
+      "newTopContrast": 7.14,
+      "newMidContrast": 8.53,
+      "newBottomContrast": 10.23,
+      "newMinContrast": 7.14,
+      "newCompliantAA": true,
+      "newCompliantAAA": true,
+      "evidence": "after_bold-gradient_6.7.png"
+    }
+  },
+  "applePresetsVerified": [
+    {
+      "id": "6.7",
+      "label": "6.7 inch (iPhone 13/12 Pro Max)",
+      "width": 1284,
+      "height": 2778,
+      "evidenceFile": "after_regression_6.7.png"
+    },
+    {
+      "id": "6.5",
+      "label": "6.5 inch (iPhone 11 Pro Max)",
+      "width": 1242,
+      "height": 2688,
+      "evidenceFile": "after_regression_6.5.png"
+    },
+    {
+      "id": "5.5",
+      "label": "5.5 inch (iPhone 8 Plus)",
+      "width": 1242,
+      "height": 2208,
+      "evidenceFile": "after_regression_5.5.png"
+    },
+    {
+      "id": "ipad",
+      "label": "12.9 inch (iPad Pro)",
+      "width": 2048,
+      "height": 2732,
+      "evidenceFile": "after_regression_ipad.png"
+    }
+  ]
+}

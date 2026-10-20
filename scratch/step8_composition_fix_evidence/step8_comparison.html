@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AppShots Phase 4 Step 2: Before vs After Evidence</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 32px; }
+    h1 { margin-bottom: 8px; font-size: 28px; }
+    .subtitle { color: #94a3b8; margin-bottom: 32px; font-size: 15px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .card { background: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; }
+    .card h2 { font-size: 18px; margin-top: 0; margin-bottom: 8px; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 12px; }
+    .badge-fixed { background: #065f46; color: #34d399; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    .pane { text-align: center; }
+    .pane-title { font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 6px; }
+    .pane img { width: 100%; border-radius: 6px; border: 1px solid #475569; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+    .stats { font-size: 13px; color: #cbd5e1; margin-top: 12px; line-height: 1.5; }
+    .stats code { background: #0f172a; padding: 2px 6px; border-radius: 4px; font-size: 12px; color: #38bdf8; }
+  </style>
+</head>
+<body>
+  <h1>AppShots Phase 4 Step 2 — Visual Quality Fix Verification</h1>
+  <div class="subtitle">Direct Before / After comparison of the three high-priority P1 visual defects</div>
+
+  <div class="grid">
+    <!-- Defect 1 -->
+    <div class="card">
+      <span class="badge badge-fixed">P1 Defect 1 Fixed</span>
+      <h2>iPad Preset Composition</h2>
+      <div class="comparison">
+        <div class="pane">
+          <div class="pane-title">BEFORE (Step 1)</div>
+          <img src="file://C:/Users/fpii/Desktop/shankar/appshots/scratch/step7_visual_audit_evidence/browser_bold-gradient_ipad.png" />
+        </div>
+        <div class="pane">
+          <div class="pane-title">AFTER (Step 2)</div>
+          <img src="file://C:/Users/fpii/Desktop/shankar/appshots/scratch/step8_composition_fix_evidence/after_ipad.png" />
+        </div>
+      </div>
+      <div class="stats">
+        • <b>Device:</b> <code>ipad-pro-12-9</code> (Space Gray)<br/>
+        • <b>Scale:</b> 72% | <b>Offset Y:</b> 24%<br/>
+        • <b>Bottom Clearance:</b> ~109px (zero clipping)<br/>
+        • <b>Canvas:</b> 2048 × 2732 px
+      </div>
+    </div>
+
+    <!-- Defect 2 -->
+    <div class="card">
+      <span class="badge badge-fixed">P1 Defect 2 Fixed</span>
+      <h2>dark-contrast-3d Spacing</h2>
+      <div class="comparison">
+        <div class="pane">
+          <div class="pane-title">BEFORE (Step 1)</div>
+          <img src="file://C:/Users/fpii/Desktop/shankar/appshots/scratch/step7_visual_audit_evidence/browser_dark-contrast-3d_6.7.png" />
+        </div>
+        <div class="pane">
+          <div class="pane-title">AFTER (Step 2)</div>
+          <img src="file://C:/Users/fpii/Desktop/shankar/appshots/scratch/step8_composition_fix_evidence/after_dark-contrast-3d_6.7.png" />
+        </div>
+      </div>
+      <div class="stats">
+        • <b>Offset Y:</b> 30% → <code>37%</code><br/>
+        • <b>Scale:</b> 85% → <code>80%</code><br/>
+        • <b>Separation:</b> 1px collision → <code>~187px clearance</code><br/>
+        • <b>Headline/Sub:</b> 72px / 36px
+      </div>
+    </div>
+
+    <!-- Defect 3 -->
+    <div class="card">
+      <span class="badge badge-fixed">P1 Defect 3 Fixed</span>
+      <h2>bold-gradient Sunset Contrast</h2>
+      <div class="comparison">
+        <div class="pane">
+          <div class="pane-title">BEFORE (Step 1)</div>
+          <img src="file://C:/Users/fpii/Desktop/shankar/appshots/scratch/step7_visual_audit_evidence/browser_bold-gradient_6.7.png" />
+        </div>
+        <div class="pane">
+          <div class="pane-title">AFTER (Step 2)</div>
+          <img src="file://C:/Users/fpii/Desktop/shankar/appshots/scratch/step8_composition_fix_evidence/after_bold-gradient_6.7.png" />
+        </div>
+      </div>
+      <div class="stats">
+        • <b>Text Color:</b> #ffffff → <code>#0f172a</code><br/>
+        • <b>Top Contrast:</b> 2.50:1 (FAIL) → <code>7.14:1 (AAA)</code><br/>
+        • <b>Mid Contrast:</b> 2.21:1 (FAIL) → <code>8.70:1 (AAA)</code><br/>
+        • <b>Bottom Contrast:</b> 2.01:1 (FAIL) → <code>10.34:1 (AAA)</code>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

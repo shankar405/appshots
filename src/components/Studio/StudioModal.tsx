@@ -30,7 +30,7 @@ import {
   variantsToProject,
   type DesignVariant,
 } from "../../lib/studio/variants";
-import { exportScreenshots } from "../../lib/export-utils";
+import { exportScreenshots, getCanonicalPreviewDimensions } from "../../lib/export-utils";
 import {
   packageBrowserStudioZip,
   type RenderedVariantAsset,
@@ -48,7 +48,7 @@ export const StudioModal = ({
   onClose,
   initialScreens,
 }: StudioModalProps) => {
-  const { importProject, activeProject, previewDimensions } = useEditor();
+  const { importProject, activeProject } = useEditor();
 
   // Step state: 'select' | 'compare'
   const [currentStep, setCurrentStep] = useState<"select" | "compare">("select");
@@ -146,6 +146,7 @@ export const StudioModal = ({
       const vars = generateVariantsForScreen(screen, {
         variantCount,
         targetDevice: activeProject.selectedDeviceId,
+        exportSizeId: activeProject.exportSizeId,
       });
       generated[screen.id] = vars;
       if (vars.length > 0) {
@@ -249,10 +250,9 @@ export const StudioModal = ({
       const effectiveExportSize =
         exportSizes.find((s) => s.id === (activeProject.exportSizeId || "6.7")) || exportSizes[0];
 
-      const effectivePreviewDims =
-        previewDimensions && previewDimensions.width > 0
-          ? previewDimensions
-          : { width: effectiveExportSize.width / 3, height: effectiveExportSize.height / 3 };
+      // Canonical 1/3 scale preview dimensions guarantee deterministic typography
+      // and identical line-wrapping between browser and headless MCP exports.
+      const effectivePreviewDims = getCanonicalPreviewDimensions(effectiveExportSize);
 
       // 1. Render genuine full-resolution PNG screenshots via native canvas pipeline
       const renderedFiles = await exportScreenshots({

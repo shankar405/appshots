@@ -1,0 +1,28 @@
+{
+  "6.7_bold_gradient": {
+    "baselineStep1Parity": 75.82,
+    "baselineStep1DiffPixels": 862411,
+    "newParityPercent": 100,
+    "newDiffPixels": 0,
+    "identicalPixels": 3566952,
+    "textZoneDiffPixels": 0,
+    "deviceZoneDiffPixels": 0,
+    "dimensions": "1284x2778"
+  },
+  "ipad_minimal": {
+    "newParityPercent": 100,
+    "newDiffPixels": 0,
+    "identicalPixels": 5595136,
+    "textZoneDiffPixels": 0,
+    "deviceZoneDiffPixels": 0,
+    "dimensions": "2048x2732"
+  },
+  "5.5_dark3d": {
+    "newParityPercent": 100,
+    "newDiffPixels": 0,
+    "identicalPixels": 2742336,
+    "textZoneDiffPixels": 0,
+    "deviceZoneDiffPixels": 0,
+    "dimensions": "1242x2208"
+  }
+}

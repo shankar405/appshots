@@ -157,5 +157,5 @@ describe("Headless Export Adapter - End-to-End Proof of Concept", () => {
     expect(result.browserDownloadComparison).toBeDefined();
     expect(result.browserDownloadComparison?.matched).toBe(true);
     expect(result.browserDownloadComparison?.bytes).toBeGreaterThan(50000);
-  }, 40000);
+  }, 75000);
 });

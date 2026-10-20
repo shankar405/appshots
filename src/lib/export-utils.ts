@@ -14,10 +14,25 @@ import JSZip from "jszip";
 export interface ExportOptions {
   screenshots: Screenshot[];
   exportSize: ExportSize;
-  previewDimensions: { width: number; height: number };
+  previewDimensions?: { width: number; height: number };
   headlineFontSize: number;
   subheadlineFontSize: number;
   skipDownload?: boolean;
+}
+
+/**
+ * Canonical 1/3 scale preview dimensions for an export preset.
+ * Serves as the single source of truth for both browser and headless/MCP
+ * rendering pipelines, ensuring identical typography, line-wrapping, and scaling.
+ */
+export function getCanonicalPreviewDimensions(exportSize: { width: number; height: number }): {
+  width: number;
+  height: number;
+} {
+  return {
+    width: exportSize.width / 3,
+    height: exportSize.height / 3,
+  };
 }
 
 /**
@@ -246,6 +261,119 @@ const drawPerspectiveImage = (
   }
 };
 
+export interface SourceCropRect {
+  sx: number;
+  sy: number;
+  sWidth: number;
+  sHeight: number;
+}
+
+/**
+ * Calculates centered 'cover' crop coordinates to fill a destination rectangle
+ * without aspect ratio distortion or blank bars.
+ */
+export function calculateCoverCrop(
+  srcWidth: number,
+  srcHeight: number,
+  destWidth: number,
+  destHeight: number
+): SourceCropRect {
+  if (
+    !srcWidth ||
+    !srcHeight ||
+    !destWidth ||
+    !destHeight ||
+    srcWidth <= 0 ||
+    srcHeight <= 0 ||
+    destWidth <= 0 ||
+    destHeight <= 0 ||
+    !Number.isFinite(srcWidth) ||
+    !Number.isFinite(srcHeight) ||
+    !Number.isFinite(destWidth) ||
+    !Number.isFinite(destHeight)
+  ) {
+    return {
+      sx: 0,
+      sy: 0,
+      sWidth: Math.max(0, Number.isFinite(srcWidth) ? srcWidth : 0),
+      sHeight: Math.max(0, Number.isFinite(srcHeight) ? srcHeight : 0),
+    };
+  }
+
+  const srcAspect = srcWidth / srcHeight;
+  const destAspect = destWidth / destHeight;
+
+  // Matching aspect ratio tolerance: no crop needed
+  if (Math.abs(srcAspect - destAspect) < 1e-4) {
+    return {
+      sx: 0,
+      sy: 0,
+      sWidth: srcWidth,
+      sHeight: srcHeight,
+    };
+  }
+
+  let sWidth = srcWidth;
+  let sHeight = srcHeight;
+  let sx = 0;
+  let sy = 0;
+
+  if (srcAspect > destAspect) {
+    // Source is wider than destination -> crop excess left/right
+    sWidth = srcHeight * destAspect;
+    sx = (srcWidth - sWidth) / 2;
+  } else {
+    // Source is taller than destination -> crop excess top/bottom
+    sHeight = srcWidth / destAspect;
+    sy = (srcHeight - sHeight) / 2;
+  }
+
+  // Defensive clamping to ensure crop rect is strictly within source dimensions
+  sx = Math.max(0, Math.min(sx, srcWidth - sWidth));
+  sy = Math.max(0, Math.min(sy, srcHeight - sHeight));
+
+  return {
+    sx,
+    sy,
+    sWidth,
+    sHeight,
+  };
+}
+
+/**
+ * Draws an image into a destination rectangle using centered cover cropping
+ * so the image completely fills the area with preserved aspect ratio.
+ */
+export function drawImageCover(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement | HTMLCanvasElement,
+  dx: number,
+  dy: number,
+  dWidth: number,
+  dHeight: number
+): SourceCropRect {
+  const srcW = (img as HTMLImageElement).naturalWidth || img.width;
+  const srcH = (img as HTMLImageElement).naturalHeight || img.height;
+
+  const crop = calculateCoverCrop(srcW, srcH, dWidth, dHeight);
+
+  if (crop.sWidth > 0 && crop.sHeight > 0 && dWidth > 0 && dHeight > 0) {
+    ctx.drawImage(
+      img,
+      crop.sx,
+      crop.sy,
+      crop.sWidth,
+      crop.sHeight,
+      dx,
+      dy,
+      dWidth,
+      dHeight
+    );
+  }
+
+  return crop;
+}
+
 /**
  * Render the flat device (frame, screen, buttons, camera) to an offscreen canvas.
  */
@@ -339,7 +467,7 @@ const renderDeviceToOffscreen = async (
         ctx.beginPath();
         ctx.roundRect(screenX, screenY, screenW, screenH, screenRadius);
         ctx.clip();
-        ctx.drawImage(img, screenX, screenY, screenW, screenH);
+        drawImageCover(ctx, img, screenX, screenY, screenW, screenH);
         ctx.restore();
         resolve();
       };
@@ -840,7 +968,7 @@ const drawDeviceInstance = async (
         ctx.beginPath();
         ctx.roundRect(screenX, screenY, screenWidthPx, screenHeightPx, screenRadius);
         ctx.clip();
-        ctx.drawImage(img, screenX, screenY, screenWidthPx, screenHeightPx);
+        drawImageCover(ctx, img, screenX, screenY, screenWidthPx, screenHeightPx);
         ctx.restore();
         resolve();
       };
@@ -917,9 +1045,14 @@ export const exportScreenshots = async ({
     const ctx = canvas.getContext("2d");
     if (!ctx) continue;
 
-    // Scale factor for export - use actual preview dimensions for accurate scaling
-    // This ensures export matches preview exactly
-    const scaleX = canvas.width / previewDimensions.width;
+    // Scale factor for export - use canonical preview dimensions (1/3 scale)
+    // for deterministic font scaling and rendering parity across browser and headless exports.
+    const effectivePreviewDims =
+      previewDimensions && previewDimensions.width > 0
+        ? previewDimensions
+        : getCanonicalPreviewDimensions(exportSize);
+
+    const scaleX = canvas.width / effectivePreviewDims.width;
     // Account for padding (4px * 2) in preview to match text wrapping
     const paddingX = 8 * scaleX;
 

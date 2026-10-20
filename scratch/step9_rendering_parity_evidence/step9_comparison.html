@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AppShots Phase 4 Step 3: Browser vs MCP Parity</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #09090b; color: #f4f4f5; margin: 0; padding: 32px; }
+    h1 { font-size: 26px; margin-bottom: 6px; }
+    .sub { color: #a1a1aa; font-size: 14px; margin-bottom: 28px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 20px; }
+    .card-title { font-size: 17px; font-weight: 600; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+    .badge { padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; background: #065f46; color: #34d399; }
+    .panes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+    .pane { text-align: center; }
+    .pane-title { font-size: 11px; font-weight: 600; color: #71717a; text-transform: uppercase; margin-bottom: 6px; }
+    .pane img { width: 100%; border-radius: 6px; border: 1px solid #3f3f46; }
+    .stats { font-size: 13px; line-height: 1.6; color: #d4d4d8; background: #121215; padding: 12px; border-radius: 8px; }
+    .stats b { color: #38bdf8; }
+  </style>
+</head>
+<body>
+  <h1>AppShots Phase 4 Step 3 — Browser vs MCP Rendering Parity</h1>
+  <div class="sub">Evaluation of dimension normalization and typography line-wrap synchronization</div>
+
+  <div class="grid">
+    <!-- Case 1 -->
+    <div class="card">
+      <div class="card-title">
+        <span>6.7" Bold Gradient</span>
+        <span class="badge">100% Parity</span>
+      </div>
+      <div class="panes">
+        <div class="pane">
+          <div class="pane-title">Browser Export</div>
+          <img src="file://C:/Users/fpii/Desktop/shankar/appshots/scratch/step9_rendering_parity_evidence/browser_bold-gradient_6.7.png" />
+        </div>
+        <div class="pane">
+          <div class="pane-title">MCP Headless Export</div>
+          <img src="file://C:/Users/fpii/Desktop/shankar/appshots/scratch/step9_rendering_parity_evidence/mcp_bold-gradient_6.7.png" />
+        </div>
+      </div>
+      <div class="stats">
+        • <b>Baseline Parity:</b> 75.82% (862,411 diff pixels)<br/>
+        • <b>New Parity:</b> 100% (0 diff pixels)<br/>
+        • <b>Headline Lines:</b> Identical (Synchronized)<br/>
+        • <b>Subheadline Lines:</b> Identical (Synchronized)<br/>
+        • <b>Canvas:</b> 1284 × 2778 px
+      </div>
+    </div>
+
+    <!-- Case 2 -->
+    <div class="card">
+      <div class="card-title">
+        <span>iPad 12.9" Minimal</span>
+        <span class="badge">100% Parity</span>
+      </div>
+      <div class="panes">
+        <div class="pane">
+          <div class="pane-title">Browser Export</div>
+          <img src="file://C:/Users/fpii/Desktop/shankar/appshots/scratch/step9_rendering_parity_evidence/browser_ipad.png" />
+        </div>
+        <div class="pane">
+          <div class="pane-title">MCP Headless Export</div>
+          <img src="file://C:/Users/fpii/Desktop/shankar/appshots/scratch/step9_rendering_parity_evidence/mcp_ipad.png" />
+        </div>
+      </div>
+      <div class="stats">
+        • <b>New Parity:</b> 100%<br/>
+        • <b>Headline Lines:</b> Identical (Synchronized)<br/>
+        • <b>Device Model:</b> ipad-pro-12-9<br/>
+        • <b>Canvas:</b> 2048 × 2732 px
+      </div>
+    </div>
+
+    <!-- Case 3 -->
+    <div class="card">
+      <div class="card-title">
+        <span>5.5" Dark Contrast 3D</span>
+        <span class="badge">100% Parity</span>
+      </div>
+      <div class="panes">
+        <div class="pane">
+          <div class="pane-title">Browser Export</div>
+          <img src="file://C:/Users/fpii/Desktop/shankar/appshots/scratch/step9_rendering_parity_evidence/browser_5.5.png" />
+        </div>
+        <div class="pane">
+          <div class="pane-title">MCP Headless Export</div>
+          <img src="file://C:/Users/fpii/Desktop/shankar/appshots/scratch/step9_rendering_parity_evidence/mcp_5.5.png" />
+        </div>
+      </div>
+      <div class="stats">
+        • <b>New Parity:</b> 100%<br/>
+        • <b>Headline Lines:</b> Identical (Synchronized)<br/>
+        • <b>Clearance:</b> Preserved (>150px)<br/>
+        • <b>Canvas:</b> 1242 × 2208 px
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -19,7 +19,7 @@ import type {
   SelectedElement,
 } from "../types";
 import { devices, exportSizes, gradientPresets } from "../constants";
-import { exportScreenshots } from "../lib/export-utils";
+import { exportScreenshots, getCanonicalPreviewDimensions } from "../lib/export-utils";
 import {
   cloneDeviceInstance,
   createDeviceInstance,
@@ -1196,7 +1196,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     void exportScreenshots({
       screenshots,
       exportSize,
-      previewDimensions,
+      previewDimensions: getCanonicalPreviewDimensions(exportSize),
       headlineFontSize,
       subheadlineFontSize,
     });

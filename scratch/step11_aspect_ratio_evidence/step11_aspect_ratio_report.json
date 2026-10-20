@@ -1,0 +1,53 @@
+{
+  "case1_landscape_in_phone": {
+    "description": "16:9 Landscape Source inside 6.7\" iPhone screen",
+    "sourceDimensions": "1920x1080 (Aspect: 1.78)",
+    "destinationScreenDimensions": "1003x2173 (Aspect: 0.46)",
+    "cropRect": {
+      "sx": 710.8495167970548,
+      "sy": 0,
+      "sWidth": 498.30096640589045,
+      "sHeight": 1080
+    },
+    "cropDetails": {
+      "croppedWidthPx": 1421.7,
+      "croppedWidthPct": 74.05,
+      "croppedHeightPx": 0
+    },
+    "visualDistortionRemoved": "Horizontal compression squishing circles into narrow ellipses eliminated"
+  },
+  "case2_square_in_phone": {
+    "description": "1:1 Square Source inside 6.7\" iPhone screen",
+    "sourceDimensions": "1000x1000 (Aspect: 1.00)",
+    "destinationScreenDimensions": "1065x2309 (Aspect: 0.46)",
+    "cropRect": {
+      "sx": 269.31739431739436,
+      "sy": 0,
+      "sWidth": 461.36521136521134,
+      "sHeight": 1000
+    },
+    "cropDetails": {
+      "croppedWidthPx": 538.6,
+      "croppedWidthPct": 53.86,
+      "croppedHeightPx": 0
+    },
+    "visualDistortionRemoved": "Vertical elongation squishing circles into vertical ovals eliminated"
+  },
+  "case3_phone_in_ipad": {
+    "description": "Tall Phone Screenshot inside iPad 4:3 screen",
+    "sourceDimensions": "1290x2796 (Aspect: 0.46)",
+    "destinationScreenDimensions": "1439x1919 (Aspect: 0.75)",
+    "cropRect": {
+      "sx": 0,
+      "sy": 537.8505906879777,
+      "sWidth": 1290,
+      "sHeight": 1720.2988186240445
+    },
+    "cropDetails": {
+      "croppedWidthPx": 0,
+      "croppedHeightPx": 1075.7,
+      "croppedHeightPct": 38.47
+    },
+    "visualDistortionRemoved": "Horizontal stretching (+62.6% widening) eliminated; UI cards and circles remain 1:1 true scale"
+  }
+}

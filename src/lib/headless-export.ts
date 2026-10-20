@@ -179,11 +179,13 @@ export async function exportProjectHeadless(
       );
     }, persistedState);
 
-    // 4. Navigate to editor
-    await page.goto(appUrl, { waitUntil: "domcontentloaded" });
+    // 4. Navigate to editor and ensure assets/fonts settle
+    await page.goto(appUrl, { waitUntil: "networkidle" });
 
     // 5. Wait for fonts and editor to mount
-    await page.evaluate(() => document.fonts.ready);
+    await page.evaluate(async () => {
+      await document.fonts.ready;
+    });
     await page.waitForSelector('[data-screenshot-card="true"]', { timeout: 10000 });
 
     // 6. Invoke headless canvas export via window bridge
@@ -201,7 +203,12 @@ export async function exportProjectHeadless(
           throw new Error("AppShots headless bridge not initialized on window.");
         }
 
-        const previewDimensions = editor.previewDimensions as { width: number; height: number };
+        // Canonical 1/3 scale preview dimensions derived from export preset ensure
+        // identical typography scaling, line wrapping, and parity with browser Studio export.
+        const canonicalPreviewDims = {
+          width: targetExportSize.width / 3,
+          height: targetExportSize.height / 3,
+        };
         const headlineFontSize = editor.headlineFontSize as number;
         const subheadlineFontSize = editor.subheadlineFontSize as number;
         const screenshots = editor.screenshots as unknown[];
@@ -210,7 +217,7 @@ export async function exportProjectHeadless(
         return await exportFn({
           screenshots,
           exportSize: targetExportSize,
-          previewDimensions,
+          previewDimensions: canonicalPreviewDims,
           headlineFontSize,
           subheadlineFontSize,
           skipDownload: true,
