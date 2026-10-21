@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AppShots Phase 4 Step 6: Minimal Clean Subheadline Hierarchy Verification</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #09090b; color: #f4f4f5; padding: 24px; margin: 0; }
+    h1, h2, h3 { color: #fafafa; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 13px; margin-right: 8px; }
+    .badge-pass { background: #059669; color: #ecfdf5; }
+    .badge-info { background: #2563eb; color: #eff6ff; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap: 24px; margin-top: 16px; }
+    .card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 16px; }
+    .card img { width: 100%; height: auto; border-radius: 8px; border: 1px solid #3f3f46; display: block; background: #000; }
+    .label { font-size: 14px; font-weight: 600; margin-top: 8px; color: #a1a1aa; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 14px; }
+    th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #27272a; }
+    th { background: #27272a; color: #e4e4e7; }
+  </style>
+</head>
+<body>
+  <h1>AppShots Phase 4 Step 6: Minimal Clean Subheadline Hierarchy Verification</h1>
+  <p>
+    <span class="badge badge-pass">WCAG AAA: 17.72:1</span>
+    <span class="badge badge-info">Headline: 72px</span>
+    <span class="badge badge-pass">Selected Subheadline: 42px (Ratio: 0.583)</span>
+    <span class="badge badge-info">Previous: 38px (Ratio: 0.528)</span>
+  </p>
+
+  <h2>1. Before (38px) vs After (42px) — Medium Copy Across Apple Presets</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>6.7" iPhone (1284×2778) — Before: 38px Subheadline</h3>
+      <img src="before_minimal-clean_6.7.png" alt="Before 6.7">
+      <div class="label">Subheadline 38px: Orphaned line 2 ("daily performance.")</div>
+    </div>
+    <div class="card">
+      <h3>6.7" iPhone (1284×2778) — After: 42px Subheadline</h3>
+      <img src="after_minimal-clean_6.7.png" alt="After 6.7">
+      <div class="label">Subheadline 42px: Balanced 2 lines, authoritative visual hierarchy, >379px clearance</div>
+    </div>
+    <div class="card">
+      <h3>6.5" iPhone (1242×2688) — Before: 38px Subheadline</h3>
+      <img src="before_minimal-clean_6.5.png" alt="Before 6.5">
+    </div>
+    <div class="card">
+      <h3>6.5" iPhone (1242×2688) — After: 42px Subheadline</h3>
+      <img src="after_minimal-clean_6.5.png" alt="After 6.5">
+    </div>
+    <div class="card">
+      <h3>5.5" iPhone (1242×2208) — Before: 38px Subheadline</h3>
+      <img src="before_minimal-clean_5.5.png" alt="Before 5.5">
+    </div>
+    <div class="card">
+      <h3>5.5" iPhone (1242×2208) — After: 42px Subheadline</h3>
+      <img src="after_minimal-clean_5.5.png" alt="After 5.5">
+      <div class="label">Tightest phone canvas: >283px clearance to device</div>
+    </div>
+    <div class="card">
+      <h3>iPad Pro (2048×2732) — Before: 38px Subheadline</h3>
+      <img src="before_minimal-clean_ipad.png" alt="Before iPad">
+    </div>
+    <div class="card">
+      <h3>iPad Pro (2048×2732) — After: 42px Subheadline</h3>
+      <img src="after_minimal-clean_ipad.png" alt="After iPad">
+      <div class="label">Single-line fit on iPad canvas, >117px clearance</div>
+    </div>
+  </div>
+
+  <h2>2. Long Copy Stress Test (42px)</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>6.7" iPhone — Long Copy (42px)</h3>
+      <img src="after_minimal-clean_long_6.7.png" alt="Long 6.7">
+      <div class="label">4 balanced lines, >287px clearance to device</div>
+    </div>
+    <div class="card">
+      <h3>5.5" iPhone (Tightest) — Long Copy (42px)</h3>
+      <img src="after_minimal-clean_long_5.5.png" alt="Long 5.5">
+      <div class="label">4 lines on smallest canvas, >190px clearance to device, zero clipping</div>
+    </div>
+    <div class="card">
+      <h3>iPad Pro — Long Copy (42px)</h3>
+      <img src="after_minimal-clean_long_ipad.png" alt="Long iPad">
+      <div class="label">2 lines, >71px clearance to device</div>
+    </div>
+  </div>
+</body>
+</html>
+  

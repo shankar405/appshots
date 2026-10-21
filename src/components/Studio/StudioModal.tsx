@@ -260,7 +260,7 @@ export const StudioModal = ({
         exportSize: effectiveExportSize,
         previewDimensions: effectivePreviewDims,
         headlineFontSize: project.headlineFontSize || 72,
-        subheadlineFontSize: project.subheadlineFontSize || 38,
+        subheadlineFontSize: project.subheadlineFontSize || 42,
         skipDownload: true,
       });
 

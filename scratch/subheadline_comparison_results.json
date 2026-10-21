@@ -1,0 +1,830 @@
+[
+  {
+    "presetId": "6.7",
+    "copyType": "short",
+    "subheadlineSize": 38,
+    "subheadlineText": "Intuitive access designed for daily speed.",
+    "maxWidth": 1003.2,
+    "lineCount": 1,
+    "lines": [
+      "Intuitive access designed for daily speed."
+    ],
+    "lineWidths": [
+      749.7021484375
+    ],
+    "textBlockHeight": 41.800000000000004,
+    "subheadlineTopY": 500.03999999999996,
+    "subheadlineBottomY": 541.8399999999999,
+    "headlineBottomY": 357,
+    "gapBetweenHeadlines": 143.03999999999996,
+    "deviceTopY": 972.3,
+    "clearanceToDevice": 430.46000000000004
+  },
+  {
+    "presetId": "6.7",
+    "copyType": "short",
+    "subheadlineSize": 42,
+    "subheadlineText": "Intuitive access designed for daily speed.",
+    "maxWidth": 1003.2,
+    "lineCount": 1,
+    "lines": [
+      "Intuitive access designed for daily speed."
+    ],
+    "lineWidths": [
+      828.6181640625
+    ],
+    "textBlockHeight": 46.2,
+    "subheadlineTopY": 500.03999999999996,
+    "subheadlineBottomY": 546.24,
+    "headlineBottomY": 357,
+    "gapBetweenHeadlines": 143.03999999999996,
+    "deviceTopY": 972.3,
+    "clearanceToDevice": 426.05999999999995
+  },
+  {
+    "presetId": "6.7",
+    "copyType": "short",
+    "subheadlineSize": 44,
+    "subheadlineText": "Intuitive access designed for daily speed.",
+    "maxWidth": 1003.2,
+    "lineCount": 1,
+    "lines": [
+      "Intuitive access designed for daily speed."
+    ],
+    "lineWidths": [
+      868.076171875
+    ],
+    "textBlockHeight": 48.400000000000006,
+    "subheadlineTopY": 500.03999999999996,
+    "subheadlineBottomY": 548.4399999999999,
+    "headlineBottomY": 357,
+    "gapBetweenHeadlines": 143.03999999999996,
+    "deviceTopY": 972.3,
+    "clearanceToDevice": 423.86
+  },
+  {
+    "presetId": "6.7",
+    "copyType": "medium",
+    "subheadlineSize": 38,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance.",
+    "maxWidth": 1003.2,
+    "lineCount": 2,
+    "lines": [
+      "Intuitive, clutter-free access designed for effortless",
+      "daily performance."
+    ],
+    "lineWidths": [
+      922.8359375,
+      337.8994140625
+    ],
+    "textBlockHeight": 83.60000000000001,
+    "subheadlineTopY": 500.03999999999996,
+    "subheadlineBottomY": 583.64,
+    "headlineBottomY": 357,
+    "gapBetweenHeadlines": 143.03999999999996,
+    "deviceTopY": 972.3,
+    "clearanceToDevice": 388.65999999999997
+  },
+  {
+    "presetId": "6.7",
+    "copyType": "medium",
+    "subheadlineSize": 42,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance.",
+    "maxWidth": 1003.2,
+    "lineCount": 2,
+    "lines": [
+      "Intuitive, clutter-free access designed for",
+      "effortless daily performance."
+    ],
+    "lineWidths": [
+      819.24609375,
+      574.1982421875
+    ],
+    "textBlockHeight": 92.4,
+    "subheadlineTopY": 500.03999999999996,
+    "subheadlineBottomY": 592.4399999999999,
+    "headlineBottomY": 357,
+    "gapBetweenHeadlines": 143.03999999999996,
+    "deviceTopY": 972.3,
+    "clearanceToDevice": 379.86
+  },
+  {
+    "presetId": "6.7",
+    "copyType": "medium",
+    "subheadlineSize": 44,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance.",
+    "maxWidth": 1003.2,
+    "lineCount": 2,
+    "lines": [
+      "Intuitive, clutter-free access designed for",
+      "effortless daily performance."
+    ],
+    "lineWidths": [
+      858.2578125,
+      601.541015625
+    ],
+    "textBlockHeight": 96.80000000000001,
+    "subheadlineTopY": 500.03999999999996,
+    "subheadlineBottomY": 596.8399999999999,
+    "headlineBottomY": 357,
+    "gapBetweenHeadlines": 143.03999999999996,
+    "deviceTopY": 972.3,
+    "clearanceToDevice": 375.46000000000004
+  },
+  {
+    "presetId": "6.7",
+    "copyType": "long",
+    "subheadlineSize": 38,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance across all your projects, workflows, and team devices without compromise.",
+    "maxWidth": 1003.2,
+    "lineCount": 3,
+    "lines": [
+      "Intuitive, clutter-free access designed for effortless",
+      "daily performance across all your projects, workflows,",
+      "and team devices without compromise."
+    ],
+    "lineWidths": [
+      922.8359375,
+      982.0068359375,
+      709.5126953125
+    ],
+    "textBlockHeight": 125.4,
+    "subheadlineTopY": 500.03999999999996,
+    "subheadlineBottomY": 625.4399999999999,
+    "headlineBottomY": 357,
+    "gapBetweenHeadlines": 143.03999999999996,
+    "deviceTopY": 972.3,
+    "clearanceToDevice": 346.86
+  },
+  {
+    "presetId": "6.7",
+    "copyType": "long",
+    "subheadlineSize": 42,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance across all your projects, workflows, and team devices without compromise.",
+    "maxWidth": 1003.2,
+    "lineCount": 4,
+    "lines": [
+      "Intuitive, clutter-free access designed for",
+      "effortless daily performance across all your",
+      "projects, workflows, and team devices without",
+      "compromise."
+    ],
+    "lineWidths": [
+      819.24609375,
+      870.6796875,
+      926.54296875,
+      261.4130859375
+    ],
+    "textBlockHeight": 184.8,
+    "subheadlineTopY": 500.03999999999996,
+    "subheadlineBottomY": 684.8399999999999,
+    "headlineBottomY": 357,
+    "gapBetweenHeadlines": 143.03999999999996,
+    "deviceTopY": 972.3,
+    "clearanceToDevice": 287.46000000000004
+  },
+  {
+    "presetId": "6.7",
+    "copyType": "long",
+    "subheadlineSize": 44,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance across all your projects, workflows, and team devices without compromise.",
+    "maxWidth": 1003.2,
+    "lineCount": 4,
+    "lines": [
+      "Intuitive, clutter-free access designed for",
+      "effortless daily performance across all your",
+      "projects, workflows, and team devices without",
+      "compromise."
+    ],
+    "lineWidths": [
+      858.2578125,
+      912.140625,
+      970.6640625,
+      273.861328125
+    ],
+    "textBlockHeight": 193.60000000000002,
+    "subheadlineTopY": 500.03999999999996,
+    "subheadlineBottomY": 693.64,
+    "headlineBottomY": 357,
+    "gapBetweenHeadlines": 143.03999999999996,
+    "deviceTopY": 972.3,
+    "clearanceToDevice": 278.65999999999997
+  },
+  {
+    "presetId": "6.5",
+    "copyType": "short",
+    "subheadlineSize": 38,
+    "subheadlineText": "Intuitive access designed for daily speed.",
+    "maxWidth": 969.6,
+    "lineCount": 1,
+    "lines": [
+      "Intuitive access designed for daily speed."
+    ],
+    "lineWidths": [
+      749.7021484375
+    ],
+    "textBlockHeight": 41.800000000000004,
+    "subheadlineTopY": 483.84,
+    "subheadlineBottomY": 525.64,
+    "headlineBottomY": 348,
+    "gapBetweenHeadlines": 135.83999999999997,
+    "deviceTopY": 940.8,
+    "clearanceToDevice": 415.15999999999997
+  },
+  {
+    "presetId": "6.5",
+    "copyType": "short",
+    "subheadlineSize": 42,
+    "subheadlineText": "Intuitive access designed for daily speed.",
+    "maxWidth": 969.6,
+    "lineCount": 1,
+    "lines": [
+      "Intuitive access designed for daily speed."
+    ],
+    "lineWidths": [
+      828.6181640625
+    ],
+    "textBlockHeight": 46.2,
+    "subheadlineTopY": 483.84,
+    "subheadlineBottomY": 530.04,
+    "headlineBottomY": 348,
+    "gapBetweenHeadlines": 135.83999999999997,
+    "deviceTopY": 940.8,
+    "clearanceToDevice": 410.76
+  },
+  {
+    "presetId": "6.5",
+    "copyType": "short",
+    "subheadlineSize": 44,
+    "subheadlineText": "Intuitive access designed for daily speed.",
+    "maxWidth": 969.6,
+    "lineCount": 1,
+    "lines": [
+      "Intuitive access designed for daily speed."
+    ],
+    "lineWidths": [
+      868.076171875
+    ],
+    "textBlockHeight": 48.400000000000006,
+    "subheadlineTopY": 483.84,
+    "subheadlineBottomY": 532.24,
+    "headlineBottomY": 348,
+    "gapBetweenHeadlines": 135.83999999999997,
+    "deviceTopY": 940.8,
+    "clearanceToDevice": 408.55999999999995
+  },
+  {
+    "presetId": "6.5",
+    "copyType": "medium",
+    "subheadlineSize": 38,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance.",
+    "maxWidth": 969.6,
+    "lineCount": 2,
+    "lines": [
+      "Intuitive, clutter-free access designed for effortless",
+      "daily performance."
+    ],
+    "lineWidths": [
+      922.8359375,
+      337.8994140625
+    ],
+    "textBlockHeight": 83.60000000000001,
+    "subheadlineTopY": 483.84,
+    "subheadlineBottomY": 567.4399999999999,
+    "headlineBottomY": 348,
+    "gapBetweenHeadlines": 135.83999999999997,
+    "deviceTopY": 940.8,
+    "clearanceToDevice": 373.36
+  },
+  {
+    "presetId": "6.5",
+    "copyType": "medium",
+    "subheadlineSize": 42,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance.",
+    "maxWidth": 969.6,
+    "lineCount": 2,
+    "lines": [
+      "Intuitive, clutter-free access designed for",
+      "effortless daily performance."
+    ],
+    "lineWidths": [
+      819.24609375,
+      574.1982421875
+    ],
+    "textBlockHeight": 92.4,
+    "subheadlineTopY": 483.84,
+    "subheadlineBottomY": 576.24,
+    "headlineBottomY": 348,
+    "gapBetweenHeadlines": 135.83999999999997,
+    "deviceTopY": 940.8,
+    "clearanceToDevice": 364.55999999999995
+  },
+  {
+    "presetId": "6.5",
+    "copyType": "medium",
+    "subheadlineSize": 44,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance.",
+    "maxWidth": 969.6,
+    "lineCount": 2,
+    "lines": [
+      "Intuitive, clutter-free access designed for",
+      "effortless daily performance."
+    ],
+    "lineWidths": [
+      858.2578125,
+      601.541015625
+    ],
+    "textBlockHeight": 96.80000000000001,
+    "subheadlineTopY": 483.84,
+    "subheadlineBottomY": 580.64,
+    "headlineBottomY": 348,
+    "gapBetweenHeadlines": 135.83999999999997,
+    "deviceTopY": 940.8,
+    "clearanceToDevice": 360.15999999999997
+  },
+  {
+    "presetId": "6.5",
+    "copyType": "long",
+    "subheadlineSize": 38,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance across all your projects, workflows, and team devices without compromise.",
+    "maxWidth": 969.6,
+    "lineCount": 3,
+    "lines": [
+      "Intuitive, clutter-free access designed for effortless",
+      "daily performance across all your projects,",
+      "workflows, and team devices without compromise."
+    ],
+    "lineWidths": [
+      922.8359375,
+      775.0849609375,
+      916.4345703125
+    ],
+    "textBlockHeight": 125.4,
+    "subheadlineTopY": 483.84,
+    "subheadlineBottomY": 609.24,
+    "headlineBottomY": 348,
+    "gapBetweenHeadlines": 135.83999999999997,
+    "deviceTopY": 940.8,
+    "clearanceToDevice": 331.55999999999995
+  },
+  {
+    "presetId": "6.5",
+    "copyType": "long",
+    "subheadlineSize": 42,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance across all your projects, workflows, and team devices without compromise.",
+    "maxWidth": 969.6,
+    "lineCount": 4,
+    "lines": [
+      "Intuitive, clutter-free access designed for",
+      "effortless daily performance across all your",
+      "projects, workflows, and team devices without",
+      "compromise."
+    ],
+    "lineWidths": [
+      819.24609375,
+      870.6796875,
+      926.54296875,
+      261.4130859375
+    ],
+    "textBlockHeight": 184.8,
+    "subheadlineTopY": 483.84,
+    "subheadlineBottomY": 668.64,
+    "headlineBottomY": 348,
+    "gapBetweenHeadlines": 135.83999999999997,
+    "deviceTopY": 940.8,
+    "clearanceToDevice": 272.15999999999997
+  },
+  {
+    "presetId": "6.5",
+    "copyType": "long",
+    "subheadlineSize": 44,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance across all your projects, workflows, and team devices without compromise.",
+    "maxWidth": 969.6,
+    "lineCount": 4,
+    "lines": [
+      "Intuitive, clutter-free access designed for",
+      "effortless daily performance across all your",
+      "projects, workflows, and team devices",
+      "without compromise."
+    ],
+    "lineWidths": [
+      858.2578125,
+      912.140625,
+      802.0546875,
+      442.470703125
+    ],
+    "textBlockHeight": 193.60000000000002,
+    "subheadlineTopY": 483.84,
+    "subheadlineBottomY": 677.44,
+    "headlineBottomY": 348,
+    "gapBetweenHeadlines": 135.83999999999997,
+    "deviceTopY": 940.8,
+    "clearanceToDevice": 263.3599999999999
+  },
+  {
+    "presetId": "5.5",
+    "copyType": "short",
+    "subheadlineSize": 38,
+    "subheadlineText": "Intuitive access designed for daily speed.",
+    "maxWidth": 969.6,
+    "lineCount": 1,
+    "lines": [
+      "Intuitive access designed for daily speed."
+    ],
+    "lineWidths": [
+      749.7021484375
+    ],
+    "textBlockHeight": 41.800000000000004,
+    "subheadlineTopY": 397.44,
+    "subheadlineBottomY": 439.24,
+    "headlineBottomY": 300,
+    "gapBetweenHeadlines": 97.44,
+    "deviceTopY": 772.8,
+    "clearanceToDevice": 333.55999999999995
+  },
+  {
+    "presetId": "5.5",
+    "copyType": "short",
+    "subheadlineSize": 42,
+    "subheadlineText": "Intuitive access designed for daily speed.",
+    "maxWidth": 969.6,
+    "lineCount": 1,
+    "lines": [
+      "Intuitive access designed for daily speed."
+    ],
+    "lineWidths": [
+      828.6181640625
+    ],
+    "textBlockHeight": 46.2,
+    "subheadlineTopY": 397.44,
+    "subheadlineBottomY": 443.64,
+    "headlineBottomY": 300,
+    "gapBetweenHeadlines": 97.44,
+    "deviceTopY": 772.8,
+    "clearanceToDevice": 329.15999999999997
+  },
+  {
+    "presetId": "5.5",
+    "copyType": "short",
+    "subheadlineSize": 44,
+    "subheadlineText": "Intuitive access designed for daily speed.",
+    "maxWidth": 969.6,
+    "lineCount": 1,
+    "lines": [
+      "Intuitive access designed for daily speed."
+    ],
+    "lineWidths": [
+      868.076171875
+    ],
+    "textBlockHeight": 48.400000000000006,
+    "subheadlineTopY": 397.44,
+    "subheadlineBottomY": 445.84000000000003,
+    "headlineBottomY": 300,
+    "gapBetweenHeadlines": 97.44,
+    "deviceTopY": 772.8,
+    "clearanceToDevice": 326.9599999999999
+  },
+  {
+    "presetId": "5.5",
+    "copyType": "medium",
+    "subheadlineSize": 38,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance.",
+    "maxWidth": 969.6,
+    "lineCount": 2,
+    "lines": [
+      "Intuitive, clutter-free access designed for effortless",
+      "daily performance."
+    ],
+    "lineWidths": [
+      922.8359375,
+      337.8994140625
+    ],
+    "textBlockHeight": 83.60000000000001,
+    "subheadlineTopY": 397.44,
+    "subheadlineBottomY": 481.04,
+    "headlineBottomY": 300,
+    "gapBetweenHeadlines": 97.44,
+    "deviceTopY": 772.8,
+    "clearanceToDevice": 291.75999999999993
+  },
+  {
+    "presetId": "5.5",
+    "copyType": "medium",
+    "subheadlineSize": 42,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance.",
+    "maxWidth": 969.6,
+    "lineCount": 2,
+    "lines": [
+      "Intuitive, clutter-free access designed for",
+      "effortless daily performance."
+    ],
+    "lineWidths": [
+      819.24609375,
+      574.1982421875
+    ],
+    "textBlockHeight": 92.4,
+    "subheadlineTopY": 397.44,
+    "subheadlineBottomY": 489.84000000000003,
+    "headlineBottomY": 300,
+    "gapBetweenHeadlines": 97.44,
+    "deviceTopY": 772.8,
+    "clearanceToDevice": 282.9599999999999
+  },
+  {
+    "presetId": "5.5",
+    "copyType": "medium",
+    "subheadlineSize": 44,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance.",
+    "maxWidth": 969.6,
+    "lineCount": 2,
+    "lines": [
+      "Intuitive, clutter-free access designed for",
+      "effortless daily performance."
+    ],
+    "lineWidths": [
+      858.2578125,
+      601.541015625
+    ],
+    "textBlockHeight": 96.80000000000001,
+    "subheadlineTopY": 397.44,
+    "subheadlineBottomY": 494.24,
+    "headlineBottomY": 300,
+    "gapBetweenHeadlines": 97.44,
+    "deviceTopY": 772.8,
+    "clearanceToDevice": 278.55999999999995
+  },
+  {
+    "presetId": "5.5",
+    "copyType": "long",
+    "subheadlineSize": 38,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance across all your projects, workflows, and team devices without compromise.",
+    "maxWidth": 969.6,
+    "lineCount": 3,
+    "lines": [
+      "Intuitive, clutter-free access designed for effortless",
+      "daily performance across all your projects,",
+      "workflows, and team devices without compromise."
+    ],
+    "lineWidths": [
+      922.8359375,
+      775.0849609375,
+      916.4345703125
+    ],
+    "textBlockHeight": 125.4,
+    "subheadlineTopY": 397.44,
+    "subheadlineBottomY": 522.84,
+    "headlineBottomY": 300,
+    "gapBetweenHeadlines": 97.44,
+    "deviceTopY": 772.8,
+    "clearanceToDevice": 249.95999999999992
+  },
+  {
+    "presetId": "5.5",
+    "copyType": "long",
+    "subheadlineSize": 42,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance across all your projects, workflows, and team devices without compromise.",
+    "maxWidth": 969.6,
+    "lineCount": 4,
+    "lines": [
+      "Intuitive, clutter-free access designed for",
+      "effortless daily performance across all your",
+      "projects, workflows, and team devices without",
+      "compromise."
+    ],
+    "lineWidths": [
+      819.24609375,
+      870.6796875,
+      926.54296875,
+      261.4130859375
+    ],
+    "textBlockHeight": 184.8,
+    "subheadlineTopY": 397.44,
+    "subheadlineBottomY": 582.24,
+    "headlineBottomY": 300,
+    "gapBetweenHeadlines": 97.44,
+    "deviceTopY": 772.8,
+    "clearanceToDevice": 190.55999999999995
+  },
+  {
+    "presetId": "5.5",
+    "copyType": "long",
+    "subheadlineSize": 44,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance across all your projects, workflows, and team devices without compromise.",
+    "maxWidth": 969.6,
+    "lineCount": 4,
+    "lines": [
+      "Intuitive, clutter-free access designed for",
+      "effortless daily performance across all your",
+      "projects, workflows, and team devices",
+      "without compromise."
+    ],
+    "lineWidths": [
+      858.2578125,
+      912.140625,
+      802.0546875,
+      442.470703125
+    ],
+    "textBlockHeight": 193.60000000000002,
+    "subheadlineTopY": 397.44,
+    "subheadlineBottomY": 591.04,
+    "headlineBottomY": 300,
+    "gapBetweenHeadlines": 97.44,
+    "deviceTopY": 772.8,
+    "clearanceToDevice": 181.76
+  },
+  {
+    "presetId": "ipad",
+    "copyType": "short",
+    "subheadlineSize": 38,
+    "subheadlineText": "Intuitive access designed for daily speed.",
+    "maxWidth": 1614.4,
+    "lineCount": 1,
+    "lines": [
+      "Intuitive access designed for daily speed."
+    ],
+    "lineWidths": [
+      749.7021484375
+    ],
+    "textBlockHeight": 41.800000000000004,
+    "subheadlineTopY": 491.76,
+    "subheadlineBottomY": 533.56,
+    "headlineBottomY": 356.8,
+    "gapBetweenHeadlines": 134.95999999999998,
+    "deviceTopY": 655.68,
+    "clearanceToDevice": 122.12
+  },
+  {
+    "presetId": "ipad",
+    "copyType": "short",
+    "subheadlineSize": 42,
+    "subheadlineText": "Intuitive access designed for daily speed.",
+    "maxWidth": 1614.4,
+    "lineCount": 1,
+    "lines": [
+      "Intuitive access designed for daily speed."
+    ],
+    "lineWidths": [
+      828.6181640625
+    ],
+    "textBlockHeight": 46.2,
+    "subheadlineTopY": 491.76,
+    "subheadlineBottomY": 537.96,
+    "headlineBottomY": 356.8,
+    "gapBetweenHeadlines": 134.95999999999998,
+    "deviceTopY": 655.68,
+    "clearanceToDevice": 117.71999999999991
+  },
+  {
+    "presetId": "ipad",
+    "copyType": "short",
+    "subheadlineSize": 44,
+    "subheadlineText": "Intuitive access designed for daily speed.",
+    "maxWidth": 1614.4,
+    "lineCount": 1,
+    "lines": [
+      "Intuitive access designed for daily speed."
+    ],
+    "lineWidths": [
+      868.076171875
+    ],
+    "textBlockHeight": 48.400000000000006,
+    "subheadlineTopY": 491.76,
+    "subheadlineBottomY": 540.16,
+    "headlineBottomY": 356.8,
+    "gapBetweenHeadlines": 134.95999999999998,
+    "deviceTopY": 655.68,
+    "clearanceToDevice": 115.51999999999998
+  },
+  {
+    "presetId": "ipad",
+    "copyType": "medium",
+    "subheadlineSize": 38,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance.",
+    "maxWidth": 1614.4,
+    "lineCount": 1,
+    "lines": [
+      "Intuitive, clutter-free access designed for effortless daily performance."
+    ],
+    "lineWidths": [
+      1271.29296875
+    ],
+    "textBlockHeight": 41.800000000000004,
+    "subheadlineTopY": 491.76,
+    "subheadlineBottomY": 533.56,
+    "headlineBottomY": 356.8,
+    "gapBetweenHeadlines": 134.95999999999998,
+    "deviceTopY": 655.68,
+    "clearanceToDevice": 122.12
+  },
+  {
+    "presetId": "ipad",
+    "copyType": "medium",
+    "subheadlineSize": 42,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance.",
+    "maxWidth": 1614.4,
+    "lineCount": 1,
+    "lines": [
+      "Intuitive, clutter-free access designed for effortless daily performance."
+    ],
+    "lineWidths": [
+      1405.11328125
+    ],
+    "textBlockHeight": 46.2,
+    "subheadlineTopY": 491.76,
+    "subheadlineBottomY": 537.96,
+    "headlineBottomY": 356.8,
+    "gapBetweenHeadlines": 134.95999999999998,
+    "deviceTopY": 655.68,
+    "clearanceToDevice": 117.71999999999991
+  },
+  {
+    "presetId": "ipad",
+    "copyType": "medium",
+    "subheadlineSize": 44,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance.",
+    "maxWidth": 1614.4,
+    "lineCount": 1,
+    "lines": [
+      "Intuitive, clutter-free access designed for effortless daily performance."
+    ],
+    "lineWidths": [
+      1472.0234375
+    ],
+    "textBlockHeight": 48.400000000000006,
+    "subheadlineTopY": 491.76,
+    "subheadlineBottomY": 540.16,
+    "headlineBottomY": 356.8,
+    "gapBetweenHeadlines": 134.95999999999998,
+    "deviceTopY": 655.68,
+    "clearanceToDevice": 115.51999999999998
+  },
+  {
+    "presetId": "ipad",
+    "copyType": "long",
+    "subheadlineSize": 38,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance across all your projects, workflows, and team devices without compromise.",
+    "maxWidth": 1614.4,
+    "lineCount": 2,
+    "lines": [
+      "Intuitive, clutter-free access designed for effortless daily performance across all your",
+      "projects, workflows, and team devices without compromise."
+    ],
+    "lineWidths": [
+      1539.5380859375,
+      1085.375
+    ],
+    "textBlockHeight": 83.60000000000001,
+    "subheadlineTopY": 491.76,
+    "subheadlineBottomY": 575.36,
+    "headlineBottomY": 356.8,
+    "gapBetweenHeadlines": 134.95999999999998,
+    "deviceTopY": 655.68,
+    "clearanceToDevice": 80.31999999999994
+  },
+  {
+    "presetId": "ipad",
+    "copyType": "long",
+    "subheadlineSize": 42,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance across all your projects, workflows, and team devices without compromise.",
+    "maxWidth": 1614.4,
+    "lineCount": 2,
+    "lines": [
+      "Intuitive, clutter-free access designed for effortless daily performance across all",
+      "your projects, workflows, and team devices without compromise."
+    ],
+    "lineWidths": [
+      1598.912109375,
+      1302.3076171875
+    ],
+    "textBlockHeight": 92.4,
+    "subheadlineTopY": 491.76,
+    "subheadlineBottomY": 584.16,
+    "headlineBottomY": 356.8,
+    "gapBetweenHeadlines": 134.95999999999998,
+    "deviceTopY": 655.68,
+    "clearanceToDevice": 71.51999999999998
+  },
+  {
+    "presetId": "ipad",
+    "copyType": "long",
+    "subheadlineSize": 44,
+    "subheadlineText": "Intuitive, clutter-free access designed for effortless daily performance across all your projects, workflows, and team devices without compromise.",
+    "maxWidth": 1614.4,
+    "lineCount": 2,
+    "lines": [
+      "Intuitive, clutter-free access designed for effortless daily performance across",
+      "all your projects, workflows, and team devices without compromise."
+    ],
+    "lineWidths": [
+      1613.90625,
+      1425.466796875
+    ],
+    "textBlockHeight": 96.80000000000001,
+    "subheadlineTopY": 491.76,
+    "subheadlineBottomY": 588.56,
+    "headlineBottomY": 356.8,
+    "gapBetweenHeadlines": 134.95999999999998,
+    "deviceTopY": 655.68,
+    "clearanceToDevice": 67.12
+  }
+]

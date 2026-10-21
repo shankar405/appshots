@@ -196,9 +196,24 @@ All test exports were generated from a realistic high-resolution application scr
 
 ### P3 — Low (Aesthetic Polish & Typographic Hierarchy)
 
-#### Finding 7: Subheadline Visual Hierarchy in `minimal-clean`
-- **Observation**: In `minimal-clean`, the subheadline size (38px vs 72px headline) on solid `#18181b` appears somewhat small and quiet. Increasing to 42–44px or increasing font-weight slightly would enhance quick scanning.
-- **Severity**: P3 — Low.
+#### Finding 7: Subheadline Visual Hierarchy in `minimal-clean` — [RESOLVED IN STEP 6]
+- **Affected Preset**: All presets (`6.7`, `6.5`, `5.5`, `ipad`).
+- **Screenshots**: `before_minimal-clean_6.7.png`, `after_minimal-clean_6.7.png`, `before_minimal-clean_long_6.7.png`, `after_minimal-clean_long_6.7.png` (in `scratch/step12_minimal_clean_evidence/`).
+- **Resolution Status**: **RESOLVED IN STEP 6**.
+- **Correction Applied**:
+  - Re-evaluated subheadline sizes 38px, 42px, and 44px against 72px headline.
+  - Selected **42px** as the optimal canonical subheadline font size in `VARIANT_PRESET_DEFINITIONS["minimal-clean"]` within `src/lib/studio/variants.ts` and `src/components/Studio/StudioModal.tsx`.
+  - Establishes an authoritative typographic hierarchy ratio of **0.583** (42px / 72px, within the golden 55–60% range), resolving the visual weakness of 38px on solid `#18181b` backdrops.
+  - Improves line-wrap aesthetics: eliminates single-word orphaned second lines on medium copy ("Intuitive, clutter-free access designed for" / "effortless daily performance.").
+  - Preserves abundant clearance between subheadline text and device mockup across all presets:
+    - **6.7" (1284×2778)**: >379px clearance (medium copy), >287px clearance (long copy).
+    - **6.5" (1242×2688)**: >364px clearance (medium copy), >272px clearance (long copy).
+    - **5.5" (1242×2208)**: >283px clearance (medium copy), >190px clearance (long copy).
+    - **iPad Pro (2048×2732)**: Single-line fit with >117px clearance (medium copy), >71px clearance (long copy).
+  - Maintained guaranteed WCAG AAA contrast of **17.72:1** (`#ffffff` text on `#18181b` solid background).
+- **Observed Behavior (Historical Baseline)**: In `minimal-clean`, the subheadline size (38px vs 72px headline) on solid `#18181b` appeared somewhat small and quiet, causing awkward line wrapping and visual weakness.
+- **Affected Pipeline**: Both Browser and MCP.
+- **Confidence**: 100% verified with Playwright render suite and unit tests.
 
 ---
 

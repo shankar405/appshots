@@ -1,0 +1,82 @@
+{
+  "step": "Phase 4 Step 6: Minimal Clean Subheadline Hierarchy",
+  "timestamp": "2026-10-21T18:02:29.382Z",
+  "variantId": "minimal-clean",
+  "backgroundColor": "#18181b",
+  "textColor": "#ffffff",
+  "headlineFontSize": 72,
+  "subheadlineSizesEvaluated": [
+    38,
+    42,
+    44
+  ],
+  "selectedSubheadlineSize": 42,
+  "selectionRationale": "42px creates an authoritative typographic hierarchy (ratio 0.583 vs 72px headline), eliminates the visual weakness of 38px, balances line breaks on medium copy (averts orphan single words), and leaves >190px vertical clearance on the tightest phone preset (5.5\"). It is the smallest size meeting all hierarchy, balance, and readability criteria.",
+  "contrastRatio": {
+    "colors": "#ffffff on #18181b",
+    "ratio": 17.72,
+    "wcagAAA": true
+  },
+  "artifacts": [
+    {
+      "presetId": "6.7",
+      "copyType": "medium",
+      "dimensions": "1284x2778",
+      "before": {
+        "filename": "before_minimal-clean_6.7.png",
+        "subheadlineSize": 38,
+        "bytes": 574970
+      },
+      "after": {
+        "filename": "after_minimal-clean_6.7.png",
+        "subheadlineSize": 42,
+        "bytes": 576942
+      }
+    },
+    {
+      "presetId": "6.5",
+      "copyType": "medium",
+      "dimensions": "1242x2688",
+      "before": {
+        "filename": "before_minimal-clean_6.5.png",
+        "subheadlineSize": 38,
+        "bytes": 562014
+      },
+      "after": {
+        "filename": "after_minimal-clean_6.5.png",
+        "subheadlineSize": 42,
+        "bytes": 564496
+      }
+    },
+    {
+      "presetId": "5.5",
+      "copyType": "medium",
+      "dimensions": "1242x2208",
+      "before": {
+        "filename": "before_minimal-clean_5.5.png",
+        "subheadlineSize": 38,
+        "bytes": 489249
+      },
+      "after": {
+        "filename": "after_minimal-clean_5.5.png",
+        "subheadlineSize": 42,
+        "bytes": 491299
+      }
+    },
+    {
+      "presetId": "ipad",
+      "copyType": "medium",
+      "dimensions": "2048x2732",
+      "before": {
+        "filename": "before_minimal-clean_ipad.png",
+        "subheadlineSize": 38,
+        "bytes": 881618
+      },
+      "after": {
+        "filename": "after_minimal-clean_ipad.png",
+        "subheadlineSize": 42,
+        "bytes": 882298
+      }
+    }
+  ]
+}

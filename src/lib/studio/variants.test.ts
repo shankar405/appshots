@@ -288,6 +288,55 @@ describe("Studio Multi-Variant Design Generator", () => {
       const ipadMargin = (2048 * (1 - 0.72)) / 2;
       expect(ipadMargin).toBeCloseTo(286.72, 1);
     });
+
+    it("ensures minimal-clean variant establishes balanced subheadline hierarchy at 42px across phone presets", () => {
+      const variants = generateVariantsForScreen(sampleScreen);
+      const minimal = variants.find((v) => v.presetId === "minimal-clean")!;
+
+      // 1. Subheadline is 42px, headline is 72px (resolves P3 Finding 7)
+      expect(minimal.visualComposition.headlineFontSize).toBe(72);
+      expect(minimal.visualComposition.subheadlineFontSize).toBe(42);
+
+      // 2. Hierarchy ratio 42 / 72 = 0.583 sits squarely in golden 55-60% range
+      const ratio = minimal.visualComposition.subheadlineFontSize! / minimal.visualComposition.headlineFontSize!;
+      expect(ratio).toBeCloseTo(0.583, 3);
+      expect(ratio).toBeGreaterThanOrEqual(0.55);
+      expect(ratio).toBeLessThanOrEqual(0.60);
+
+      // 3. Project created from minimal-clean retains 42px on phone presets
+      const project = variantsToProject([minimal], { exportSizeId: "6.7" });
+      expect(project.subheadlineFontSize).toBe(42);
+      expect(project.headlineFontSize).toBe(72);
+
+      // 4. iPad export retains calibrated tablet subheadline size (38px)
+      const ipadVariants = generateVariantsForScreen(sampleScreen, { exportSizeId: "ipad" });
+      const ipadMinimal = ipadVariants.find((v) => v.presetId === "minimal-clean")!;
+      expect(ipadMinimal.visualComposition.subheadlineFontSize).toBe(38);
+      expect(ipadMinimal.visualComposition.headlineFontSize).toBe(76);
+
+      const ipadProject = variantsToProject([ipadMinimal], { exportSizeId: "ipad" });
+      expect(ipadProject.subheadlineFontSize).toBe(38);
+      expect(ipadProject.headlineFontSize).toBe(76);
+
+      // 5. Verification of vertical clearance across presets with 42px subheadline
+      const phonePresets = [
+        { id: "6.7", height: 2778 },
+        { id: "6.5", height: 2688 },
+        { id: "5.5", height: 2208 },
+      ];
+
+      for (const preset of phonePresets) {
+        const subheadlineTopY = preset.height * 0.18;
+        // 2 lines of 42px subheadline at 1.1 line-height
+        const textHeight = 2 * 42 * 1.1;
+        const subheadlineBottomY = subheadlineTopY + textHeight;
+        const deviceTopY = preset.height * (minimal.visualComposition.deviceOffsetY / 100);
+        const clearance = deviceTopY - subheadlineBottomY;
+
+        // Guaranteed >280px clearance on all phone presets
+        expect(clearance).toBeGreaterThan(280);
+      }
+    });
   });
 });
 

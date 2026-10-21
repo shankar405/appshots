@@ -137,6 +137,19 @@ describe("Browser / MCP Rendering Parity & Dimension Normalization", () => {
       expect(lateralMargin).toBeCloseTo(96.3, 1);
       expect((lateralMargin / canvasWidth) * 100).toBeCloseTo(7.5, 1);
     });
+
+    it("preserves refined minimal-clean subheadline hierarchy at 42px with balanced clearance", () => {
+      const variants = generateVariantsForScreen(sampleScreen, { exportSizeId: "6.7" });
+      const minimal = variants.find((v) => v.presetId === "minimal-clean")!;
+
+      expect(minimal.visualComposition.headlineFontSize).toBe(72);
+      expect(minimal.visualComposition.subheadlineFontSize).toBe(42);
+      expect(minimal.visualComposition.deviceOffsetY).toBe(35);
+      expect(minimal.visualComposition.deviceScale).toBe(80);
+
+      const project = variantsToProject([minimal], { exportSizeId: "6.7" });
+      expect(project.subheadlineFontSize).toBe(42);
+    });
   });
 
   describe("4. MCP Tools Registration and Schema Invariance", () => {

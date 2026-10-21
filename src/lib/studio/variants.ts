@@ -94,7 +94,7 @@ export const VARIANT_PRESET_DEFINITIONS: Record<
       backgroundColor: "#18181b",
       textColor: "#ffffff",
       headlineFontSize: 72,
-      subheadlineFontSize: 38,
+      subheadlineFontSize: 42,
     },
     deviceModelFallback: "iphone-15-pro-max",
     deviceColorFallback: "black",
@@ -365,6 +365,6 @@ export function variantsToProject(
     exportSizeId: exportPreset.id,
     activeScreenshotId: screenshots[0].id,
     headlineFontSize: isIPad ? 76 : (firstVariant.visualComposition.headlineFontSize || 72),
-    subheadlineFontSize: isIPad ? 38 : (firstVariant.visualComposition.subheadlineFontSize || 38),
+    subheadlineFontSize: isIPad ? 38 : (firstVariant.visualComposition.subheadlineFontSize || 42),
   };
 }
